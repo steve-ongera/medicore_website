@@ -11,25 +11,62 @@ function formatPrice(price) {
 
 export default function PackageCard({ pkg }) {
   return (
-    <article className={`package-card ${pkg.is_featured ? "package-card--featured" : ""}`}>
-      {pkg.is_featured && <span className="package-card__badge">Most Popular</span>}
-      <h3 className="package-card__name">{pkg.name}</h3>
-      <p className="package-card__tagline">{pkg.tagline}</p>
-
-      <div className="package-card__price">
-        <span className="package-card__price-value">{formatPrice(pkg.price)}</span>
-        {pkg.price ? <span className="package-card__price-cycle">/{pkg.billing_cycle}</span> : null}
-      </div>
-
-      <ul className="package-card__meta">
-        <li>{pkg.max_beds ? `${pkg.max_beds} beds` : "Unlimited beds"}</li>
-        <li>{pkg.max_users ? `${pkg.max_users} staff accounts` : "Unlimited staff accounts"}</li>
-        <li>{pkg.module_count} modules included</li>
+    <div className={`pricing-item ${pkg.is_featured ? 'featured' : ''}`}>
+      {/* Featured Badge */}
+      {pkg.is_featured && <span className="advanced">Featured</span>}
+      
+      {/* Package Name */}
+      <h3>{pkg.name}</h3>
+      
+      {/* Price */}
+      <h4>
+        <sup>$</sup>
+        {pkg.price ? pkg.price : 'Contact'}
+        <span> {pkg.price ? `/ ${pkg.billing_cycle}` : ''}</span>
+      </h4>
+      
+      {/* Features List */}
+      <ul>
+        <li>
+          <i className="bi bi-check"></i> 
+          {pkg.max_beds !== null && pkg.max_beds !== undefined 
+            ? pkg.max_beds === 0 
+              ? 'No bed limit' 
+              : `${pkg.max_beds} Beds` 
+            : 'Unlimited Beds'}
+        </li>
+        <li>
+          <i className="bi bi-check"></i> 
+          {pkg.max_users !== null && pkg.max_users !== undefined 
+            ? pkg.max_users === 0 
+              ? 'No user limit' 
+              : `${pkg.max_users} Users` 
+            : 'Unlimited Users'}
+        </li>
+        <li>
+          <i className="bi bi-check"></i> 
+          {pkg.module_count || pkg.modules?.length || 0} Modules Included
+        </li>
+        <li>
+          <i className="bi bi-check"></i> 
+          {pkg.billing_cycle === 'monthly' ? 'Monthly Billing' : 
+           pkg.billing_cycle === 'annually' ? 'Annual Billing' : 
+           'Custom Billing'}
+        </li>
+        {pkg.tagline && (
+          <li>
+            <i className="bi bi-info-circle"></i> 
+            {pkg.tagline}
+          </li>
+        )}
       </ul>
-
-      <Link to={`/packages/${pkg.slug}`} className="btn btn--outline package-card__cta">
-        View Details
-      </Link>
-    </article>
+      
+      {/* CTA Button */}
+      <div className="btn-wrap">
+        <Link to={`/packages/${pkg.slug}`} className="btn-buy">
+          {pkg.price ? 'Get Started' : 'Contact Us'}
+        </Link>
+      </div>
+    </div>
   );
 }
