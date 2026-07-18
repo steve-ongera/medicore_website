@@ -86,8 +86,7 @@ export default function Footer() {
           <span>All Rights Reserved</span>
         </p>
         <div className="credits">
-          Designed with <i className="bi bi-heart-fill text-danger"></i> for 
-          Kenyan Healthcare
+           Empowering Kenyan Healthcare Through Digital Innovation
         </div>
       </div>
     </footer>

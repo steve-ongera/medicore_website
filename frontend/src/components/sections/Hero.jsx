@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-// Import hero images (you'll need to add these to your assets)
+// Import hero images
 import hero1 from '../../assets/img/hero-carousel/hero-carousel-1.jpg';
 import hero2 from '../../assets/img/hero-carousel/hero-carousel-2.jpg';
 import hero3 from '../../assets/img/hero-carousel/hero-carousel-3.jpg';
@@ -28,6 +28,11 @@ const Hero = ({ settings }) => {
     }
   ];
 
+  // Log to verify images are loaded
+  useEffect(() => {
+    console.log('Hero images loaded:', { hero1, hero2, hero3 });
+  }, []);
+
   return (
     <section id="hero" className="hero section">
       <div 
@@ -41,11 +46,28 @@ const Hero = ({ settings }) => {
             <div 
               key={slide.id} 
               className={`carousel-item ${index === 0 ? 'active' : ''}`}
+              style={{ 
+                backgroundImage: `url(${slide.image})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                minHeight: '70vh'
+              }}
             >
+              {/* The image is now a background, but we keep the img tag for fallback */}
               <img 
                 src={slide.image} 
                 alt={slide.title}
                 className="d-block w-100"
+                style={{ 
+                  height: '70vh', 
+                  objectFit: 'cover', 
+                  width: '100%',
+                  display: 'block'
+                }}
+                onError={(e) => {
+                  console.error(`Failed to load image: ${slide.image}`);
+                  e.target.style.display = 'none';
+                }}
               />
               <div className="container" data-aos="fade-up" data-aos-delay={100 + (index * 100)}>
                 <h2>{slide.title}</h2>

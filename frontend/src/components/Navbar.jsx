@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, Link } from "react-router-dom";
+import logo from "../assets/img/logo.png";
 
 const NAV_LINKS = [
   { to: "/", label: "Home" },
@@ -7,7 +8,7 @@ const NAV_LINKS = [
   { to: "/services", label: "Services" },
   { to: "/departments", label: "Departments" },
   { to: "/doctors", label: "Doctors" },
-  { to: "/contact", label: "Contact" },
+  { to: "/contact", label: "Contact" },  // Contact is already here
 ];
 
 const DROPDOWN_LINKS = [
@@ -61,8 +62,7 @@ export default function Navbar() {
       <div className="branding d-flex align-items-center">
         <div className="container position-relative d-flex align-items-center justify-content-end">
           <Link to="/" className="logo d-flex align-items-center me-auto" onClick={() => setIsOpen(false)}>
-            <span className="navbar__brand-mark">MC</span>
-            <span className="sitename">Medicore</span>
+            <img src={logo} alt="Medicore HMIS" />
           </Link>
 
           <nav id="navmenu" className={`navmenu ${isOpen ? "mobile-nav-active" : ""}`}>
@@ -108,17 +108,7 @@ export default function Navbar() {
                 </ul>
               </li>
 
-              <li>
-                <NavLink
-                  to="/contact"
-                  className={({ isActive }) =>
-                    `nav-link ${isActive ? "active" : ""}`
-                  }
-                  onClick={() => setIsOpen(false)}
-                >
-                  Contact
-                </NavLink>
-              </li>
+              {/* REMOVED: The duplicate Contact link that was here */}
             </ul>
             <i 
               className="mobile-nav-toggle d-xl-none bi bi-list" 
