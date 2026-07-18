@@ -109,6 +109,12 @@ h6 {
   box-shadow: 0 2px 20px var(--shadow-color);
 }
 
+.header.sticky-top {
+  /* Explicit, so this never loses a specificity tie against Bootstrap's
+     own .sticky-top z-index and end up sitting under page content. */
+  z-index: 1030;
+}
+
 .header .topbar {
   background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
   color: var(--contrast-color);
@@ -157,12 +163,30 @@ h6 {
   align-items: center;
   gap: 6px;
   box-shadow: 0 4px 15px rgba(63, 187, 192, 0.3);
+  white-space: nowrap;
 }
 
 .header .cta-btn:hover {
   background: var(--accent-dark);
   transform: translateY(-2px);
   box-shadow: 0 6px 25px rgba(63, 187, 192, 0.4);
+}
+
+/* Safety net for small phones: with the CTA pill and the hamburger both
+   sitting in the same flex row, a very narrow viewport can squeeze the
+   toggle button to the point it's hard to tap. Shrinking the CTA down to
+   an icon-only button below 420px keeps the hamburger fully reachable. */
+@media (max-width: 420px) {
+  .header .cta-btn {
+    padding: 10px 14px;
+    margin: 0 5px 0 12px;
+    font-size: 0;
+  }
+
+  .header .cta-btn i {
+    font-size: 16px;
+    margin: 0;
+  }
 }
 
 /*--------------------------------------------------------------
@@ -279,6 +303,10 @@ h6 {
     background: none;
     border: none;
     padding: 0;
+    position: relative;
+    /* Keeps the toggle clickable above the overlay/backdrop at all times,
+       not just once .mobile-nav-active is already applied. */
+    z-index: 9998;
   }
 
   .mobile-nav-toggle:hover {
@@ -338,6 +366,7 @@ h6 {
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
     z-index: 9997;
+    cursor: pointer;
     animation: fadeIn 0.3s ease-in-out;
   }
 
