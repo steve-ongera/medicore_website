@@ -28,47 +28,38 @@ const Hero = ({ settings }) => {
     }
   ];
 
-  // Log to verify images are loaded
+  // Debug: confirms whether Vite actually resolved these imports to real URLs.
+  // If any of these log as `undefined`, the import path/filename/case is wrong.
+  // If they log a real string but the slide is still blank, it's a CSS/height
+  // issue further down the carousel-inner / hero-carousel chain, not the image.
   useEffect(() => {
     console.log('Hero images loaded:', { hero1, hero2, hero3 });
   }, []);
 
   return (
-    <section id="hero" className="hero section">
-      <div 
-        id="hero-carousel" 
-        className="carousel slide carousel-fade" 
-        data-bs-ride="carousel" 
+    <section id="hero" className="hero section" style={{ minHeight: '70vh' }}>
+      <div
+        id="hero-carousel"
+        className="carousel slide carousel-fade"
+        data-bs-ride="carousel"
         data-bs-interval="5000"
+        style={{ height: '70vh' }}
       >
-        <div className="carousel-inner">
+        <div className="carousel-inner" style={{ height: '70vh' }}>
           {slides.map((slide, index) => (
-            <div 
-              key={slide.id} 
+            <div
+              key={slide.id}
               className={`carousel-item ${index === 0 ? 'active' : ''}`}
-              style={{ 
+              style={{
+                backgroundColor: '#0d3b66', // visible fallback if the image 404s
                 backgroundImage: `url(${slide.image})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                minHeight: '70vh'
+                backgroundRepeat: 'no-repeat',
+                height: '70vh',
+                width: '100%',
               }}
             >
-              {/* The image is now a background, but we keep the img tag for fallback */}
-              <img 
-                src={slide.image} 
-                alt={slide.title}
-                className="d-block w-100"
-                style={{ 
-                  height: '70vh', 
-                  objectFit: 'cover', 
-                  width: '100%',
-                  display: 'block'
-                }}
-                onError={(e) => {
-                  console.error(`Failed to load image: ${slide.image}`);
-                  e.target.style.display = 'none';
-                }}
-              />
               <div className="container" data-aos="fade-up" data-aos-delay={100 + (index * 100)}>
                 <h2>{slide.title}</h2>
                 <p>{slide.description}</p>
@@ -86,20 +77,20 @@ const Hero = ({ settings }) => {
         </div>
 
         {/* Carousel Controls */}
-        <a 
-          className="carousel-control-prev" 
-          href="#hero-carousel" 
-          role="button" 
+        <a
+          className="carousel-control-prev"
+          href="#hero-carousel"
+          role="button"
           data-bs-slide="prev"
         >
           <span className="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>
           <span className="visually-hidden">Previous</span>
         </a>
 
-        <a 
-          className="carousel-control-next" 
-          href="#hero-carousel" 
-          role="button" 
+        <a
+          className="carousel-control-next"
+          href="#hero-carousel"
+          role="button"
           data-bs-slide="next"
         >
           <span className="carousel-control-next-icon bi bi-chevron-right" aria-hidden="true"></span>
@@ -108,9 +99,9 @@ const Hero = ({ settings }) => {
 
         <ol className="carousel-indicators">
           {slides.map((_, index) => (
-            <li 
+            <li
               key={index}
-              data-bs-target="#hero-carousel" 
+              data-bs-target="#hero-carousel"
               data-bs-slide-to={index}
               className={index === 0 ? 'active' : ''}
               aria-label={`Slide ${index + 1}`}

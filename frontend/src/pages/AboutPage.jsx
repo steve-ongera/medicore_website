@@ -76,7 +76,12 @@ export default function AboutPage() {
         <div className="container">
           <div className="row gy-4">
             <div className="col-lg-6 position-relative align-self-start" data-aos="fade-up" data-aos-delay="100">
-              <img src={aboutImg} className="img-fluid" alt="About Medicore HMIS" />
+              <img 
+                src={aboutImg} 
+                className="img-fluid rounded" 
+                alt="About Medicore HMIS" 
+                style={{ borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
+              />
               <a 
                 href="https://www.youtube.com/watch?v=Y7f98aduVJ8" 
                 className="glightbox pulsating-play-btn"
@@ -92,19 +97,19 @@ export default function AboutPage() {
               </p>
               <ul>
                 <li>
-                  <i className="bi bi-check2-all"></i> 
+                  <i className="bi bi-check-circle-fill"></i> 
                   <span>SHA and eTIMS compliant out of the box</span>
                 </li>
                 <li>
-                  <i className="bi bi-check2-all"></i> 
+                  <i className="bi bi-check-circle-fill"></i> 
                   <span>M-Pesa Paybill and STK Push billing integration</span>
                 </li>
                 <li>
-                  <i className="bi bi-check2-all"></i> 
+                  <i className="bi bi-check-circle-fill"></i> 
                   <span>Comprehensive bed management and patient records</span>
                 </li>
                 <li>
-                  <i className="bi bi-check2-all"></i> 
+                  <i className="bi bi-check-circle-fill"></i> 
                   <span>Real-time reporting and analytics dashboards</span>
                 </li>
               </ul>
@@ -134,7 +139,7 @@ export default function AboutPage() {
                 data-aos="fade-up" 
                 data-aos-delay={100 + (index * 100)}
               >
-                <div className="service-item position-relative">
+                <div className="service-item position-relative h-100">
                   <div className="icon">
                     <span className="display-4 fw-bold" style={{ color: 'var(--accent-color)' }}>
                       {value.code}
@@ -169,13 +174,18 @@ export default function AboutPage() {
                   <div className="team-member">
                     <div className="member-img">
                       {member.photo ? (
-                        <img src={member.photo} className="img-fluid" alt={member.name} />
+                        <img 
+                          src={member.photo} 
+                          className="img-fluid" 
+                          alt={member.name} 
+                          style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+                        />
                       ) : (
                         <div 
                           className="img-fluid d-flex align-items-center justify-content-center"
                           style={{ 
                             height: '300px', 
-                            background: 'var(--accent-color)',
+                            background: 'linear-gradient(135deg, var(--accent-color), var(--accent-dark))',
                             color: 'white',
                             fontSize: '80px',
                             fontWeight: 'bold'
