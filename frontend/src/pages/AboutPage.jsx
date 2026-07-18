@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getTeamMembers } from "../services/api.js";
+import aboutImg from "../assets/img/about.jpg";
 
 const VALUES = [
   {
@@ -35,58 +37,178 @@ export default function AboutPage() {
   }, []);
 
   return (
-    <>
-      <section className="page-header">
-        <div className="section-container">
-          <span className="eyebrow">About Medicore HMIS</span>
-          <h1 className="page-header__title">
-            Software built alongside the facilities that use it
-          </h1>
-          <p className="page-header__subtitle">
+    <main className="main">
+      {/* Page Title */}
+      <div className="page-title">
+        <div className="heading">
+          <div className="container">
+            <div className="row d-flex justify-content-center text-center">
+              <div className="col-lg-8">
+                <h1>About Us</h1>
+                <p className="mb-0">
+                  Software built alongside the facilities that use it
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <nav className="breadcrumbs">
+          <div className="container">
+            <ol>
+              <li><Link to="/">Home</Link></li>
+              <li className="current">About</li>
+            </ol>
+          </div>
+        </nav>
+      </div>
+
+      {/* About Section */}
+      <section id="about" className="about section">
+        <div className="container section-title" data-aos="fade-up">
+          <h2>About Medicore HMIS</h2>
+          <p>
             Medicore HMIS started with one question from a Nairobi clinic
             administrator: why does compliance software make our job harder,
             not easier? Every module since has been built to answer that.
           </p>
         </div>
+
+        <div className="container">
+          <div className="row gy-4">
+            <div className="col-lg-6 position-relative align-self-start" data-aos="fade-up" data-aos-delay="100">
+              <img src={aboutImg} className="img-fluid" alt="About Medicore HMIS" />
+              <a 
+                href="https://www.youtube.com/watch?v=Y7f98aduVJ8" 
+                className="glightbox pulsating-play-btn"
+                target="_blank"
+                rel="noopener noreferrer"
+              ></a>
+            </div>
+            <div className="col-lg-6 content" data-aos="fade-up" data-aos-delay="200">
+              <h3>Built for Kenyan Healthcare</h3>
+              <p className="fst-italic">
+                Medicore HMIS is designed specifically for Kenyan healthcare facilities, 
+                combining international standards with local compliance requirements.
+              </p>
+              <ul>
+                <li>
+                  <i className="bi bi-check2-all"></i> 
+                  <span>SHA and eTIMS compliant out of the box</span>
+                </li>
+                <li>
+                  <i className="bi bi-check2-all"></i> 
+                  <span>M-Pesa Paybill and STK Push billing integration</span>
+                </li>
+                <li>
+                  <i className="bi bi-check2-all"></i> 
+                  <span>Comprehensive bed management and patient records</span>
+                </li>
+                <li>
+                  <i className="bi bi-check2-all"></i> 
+                  <span>Real-time reporting and analytics dashboards</span>
+                </li>
+              </ul>
+              <p>
+                From small clinics to large hospitals, Medicore HMIS scales with your needs. 
+                Our platform is built by healthcare professionals who understand the unique 
+                challenges of the Kenyan healthcare system.
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="section">
-        <div className="section-container">
-          <div className="values-grid">
-            {VALUES.map((v) => (
-              <div className="value-card" key={v.code}>
-                <span className="value-card__code">{v.code}</span>
-                <h3 className="value-card__title">{v.title}</h3>
-                <p className="value-card__text">{v.text}</p>
+      {/* Values Section */}
+      <section id="values" className="features section light-background">
+        <div className="container section-title" data-aos="fade-up">
+          <h2>Our Values</h2>
+          <p>The principles that guide everything we do</p>
+        </div>
+
+        <div className="container">
+          <div className="row gy-4">
+            {VALUES.map((value, index) => (
+              <div 
+                key={value.code}
+                className="col-lg-4 col-md-6" 
+                data-aos="fade-up" 
+                data-aos-delay={100 + (index * 100)}
+              >
+                <div className="service-item position-relative">
+                  <div className="icon">
+                    <span className="display-4 fw-bold" style={{ color: 'var(--accent-color)' }}>
+                      {value.code}
+                    </span>
+                  </div>
+                  <h3>{value.title}</h3>
+                  <p>{value.text}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Team Section */}
       {!isLoading && team.length > 0 && (
-        <section className="section section--team">
-          <div className="section-container">
-            <span className="eyebrow">Our team</span>
-            <h2 className="section__title">The people behind Medicore</h2>
-            <div className="team-grid">
-              {team.map((member) => (
-                <div className="team-card" key={member.id}>
-                  {member.photo ? (
-                    <img src={member.photo} alt={member.name} className="team-card__photo" />
-                  ) : (
-                    <div className="team-card__photo team-card__photo--placeholder">
-                      {member.name?.charAt(0)}
+        <section id="team" className="doctors section">
+          <div className="container section-title" data-aos="fade-up">
+            <h2>Our Team</h2>
+            <p>The people behind Medicore HMIS</p>
+          </div>
+
+          <div className="container">
+            <div className="row gy-4">
+              {team.map((member, index) => (
+                <div 
+                  key={member.id}
+                  className="col-lg-3 col-md-6 d-flex align-items-stretch" 
+                  data-aos="fade-up" 
+                  data-aos-delay={100 + (index * 100)}
+                >
+                  <div className="team-member">
+                    <div className="member-img">
+                      {member.photo ? (
+                        <img src={member.photo} className="img-fluid" alt={member.name} />
+                      ) : (
+                        <div 
+                          className="img-fluid d-flex align-items-center justify-content-center"
+                          style={{ 
+                            height: '300px', 
+                            background: 'var(--accent-color)',
+                            color: 'white',
+                            fontSize: '80px',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          {member.name?.charAt(0)}
+                        </div>
+                      )}
+                      <div className="social">
+                        {member.linkedin_url && (
+                          <a href={member.linkedin_url} target="_blank" rel="noopener noreferrer">
+                            <i className="bi bi-linkedin"></i>
+                          </a>
+                        )}
+                        {member.twitter_url && (
+                          <a href={member.twitter_url} target="_blank" rel="noopener noreferrer">
+                            <i className="bi bi-twitter-x"></i>
+                          </a>
+                        )}
+                      </div>
                     </div>
-                  )}
-                  <h4 className="team-card__name">{member.name}</h4>
-                  <p className="team-card__role">{member.role}</p>
+                    <div className="member-info">
+                      <h4>{member.name}</h4>
+                      <span>{member.role}</span>
+                      {member.bio && <p className="mt-2 small">{member.bio}</p>}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
       )}
-    </>
+    </main>
   );
 }
