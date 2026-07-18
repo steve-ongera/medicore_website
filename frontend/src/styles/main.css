@@ -299,7 +299,7 @@ h6 {
     line-height: 0;
     margin-right: 10px;
     cursor: pointer;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, opacity 0.2s ease;
     background: none;
     border: none;
     padding: 0;
@@ -313,17 +313,25 @@ h6 {
     color: var(--accent-color);
   }
 
+  /* Hide the hamburger while the sidebar is open. The dedicated
+     .mobile-nav-close button (fixed inside the panel) is the only
+     close control now — this removes the old duplicate "two X icons"
+     issue caused by this button repositioning + relabeling itself
+     at the same time the close button was also visible. */
+  .mobile-nav-active .mobile-nav-toggle {
+    display: none;
+  }
+
   .navmenu {
     padding: 0;
     z-index: 9997;
   }
 
   .navmenu ul {
-    display: none;
     list-style: none;
     position: fixed;
     top: 0;
-    right: -320px;
+    right: 0;
     width: 320px;
     max-width: 85vw;
     height: 100vh;
@@ -331,14 +339,21 @@ h6 {
     margin: 0;
     background-color: var(--nav-mobile-background-color);
     overflow-y: auto;
-    transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: 9998;
     box-shadow: -10px 0 40px var(--shadow-color);
+    /* transform-based slide instead of animating `right`: transform is
+       compositor-only (no layout/paint per frame), so the panel opens
+       and closes smoothly even on lower-powered mobile devices. */
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                visibility 0s linear 0.35s;
   }
 
   .navmenu.mobile-nav-active ul {
-    display: block;
-    right: 0;
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .mobile-nav-close {
@@ -439,14 +454,6 @@ h6 {
 
   .mobile-nav-active {
     overflow: hidden;
-  }
-
-  .mobile-nav-active .mobile-nav-toggle {
-    color: var(--accent-color);
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    z-index: 9999;
   }
 
   body.mobile-nav-active {

@@ -72,9 +72,12 @@ export default function Navbar() {
           </Link>
 
           <nav id="navmenu" className={`navmenu ${isOpen ? "mobile-nav-active" : ""}`}>
-            {/* Close Button for Mobile */}
-            <button 
-              className="mobile-nav-close d-xl-none" 
+            {/* Close Button for Mobile — the single, dedicated control for
+                closing the sidebar. The hamburger toggle below hides itself
+                via CSS while the sidebar is open, so there's only ever one
+                close icon visible at a time. */}
+            <button
+              className="mobile-nav-close d-xl-none"
               onClick={closeMobileMenu}
               aria-label="Close navigation"
             >
@@ -95,15 +98,15 @@ export default function Navbar() {
                   </NavLink>
                 </li>
               ))}
-              
+
               {/* Packages Dropdown */}
               <li className="dropdown">
-                <a 
-                  href="#" 
+                <a
+                  href="#"
                   onClick={toggleDropdown}
                   className={isDropdownOpen ? "active" : ""}
                 >
-                  <span>Packages</span> 
+                  <span>Packages</span>
                   <i className="bi bi-chevron-down toggle-dropdown"></i>
                 </a>
                 <ul className={isDropdownOpen ? "dropdown-active" : ""}>
@@ -129,14 +132,17 @@ export default function Navbar() {
             <i className="bi bi-file-text me-1"></i> Request Quote
           </Link>
 
-          {/* Mobile Menu Toggle Button */}
-          <button 
-            className="mobile-nav-toggle d-xl-none" 
+          {/* Mobile Menu Toggle Button. Always a plain hamburger icon —
+              it's hidden via CSS (.mobile-nav-active .mobile-nav-toggle)
+              while the sidebar is open, so it no longer needs to swap to
+              an X icon itself (that job belongs solely to .mobile-nav-close). */}
+          <button
+            className="mobile-nav-toggle d-xl-none"
             onClick={toggleMobileMenu}
             aria-label="Toggle navigation menu"
             aria-expanded={isOpen}
           >
-            <i className={`bi ${isOpen ? 'bi-x-lg' : 'bi-list'}`}></i>
+            <i className="bi bi-list"></i>
           </button>
         </div>
       </div>
