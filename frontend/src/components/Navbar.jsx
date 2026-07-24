@@ -132,18 +132,20 @@ export default function Navbar() {
             <i className="bi bi-file-text me-1"></i> Request Quote
           </Link>
 
-          {/* Mobile Menu Toggle Button. Always a plain hamburger icon —
-              it's hidden via CSS (.mobile-nav-active .mobile-nav-toggle)
-              while the sidebar is open, so it no longer needs to swap to
-              an X icon itself (that job belongs solely to .mobile-nav-close). */}
-          <button
-            className="mobile-nav-toggle d-xl-none"
-            onClick={toggleMobileMenu}
-            aria-label="Toggle navigation menu"
-            aria-expanded={isOpen}
-          >
-            <i className="bi bi-list"></i>
-          </button>
+          {/* Mobile Menu Toggle Button. Rendered ONLY when the sidebar is
+              closed — not just hidden with CSS. This guarantees the
+              hamburger and the .mobile-nav-close button can never both be
+              on screen at once, regardless of any class-sync timing. */}
+          {!isOpen && (
+            <button
+              className="mobile-nav-toggle d-xl-none"
+              onClick={toggleMobileMenu}
+              aria-label="Open navigation menu"
+              aria-expanded={isOpen}
+            >
+              <i className="bi bi-list"></i>
+            </button>
+          )}
         </div>
       </div>
     </header>

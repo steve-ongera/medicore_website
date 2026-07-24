@@ -785,11 +785,40 @@ section,
 .hero .carousel-item {
   position: absolute;
   inset: 0;
-  background-size: cover;
-  background-position: center;
   display: flex;
   justify-content: center;
   align-items: flex-end;
+  overflow: hidden;
+}
+
+/* Dedicated background layer, separate from .container, so the Ken Burns
+   zoom can animate the photo without dragging the text card along with it. */
+.hero .hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
+  transform: scale(1);
+  will-change: transform;
+}
+
+/* Slow continuous zoom on whichever slide is currently active. Because
+   Bootstrap's carousel toggles the .active class on/off as slides change,
+   this animation naturally restarts every time a slide becomes active
+   again — no JS re-triggering needed. */
+.hero .carousel-item.active .hero-bg {
+  animation: heroKenBurns 8s ease-out forwards;
+}
+
+@keyframes heroKenBurns {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.15);
+  }
 }
 
 .hero .container {
@@ -804,6 +833,58 @@ section,
   z-index: 3;
   max-width: 800px;
   box-shadow: 0 10px 40px var(--shadow-color);
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+/* Staggered fade/slide-up entrance for the text card and its contents,
+   timed so the heading leads, then the copy, then the buttons. Replays
+   on every slide change for the same reason as the Ken Burns effect above. */
+.hero .carousel-item.active .container {
+  animation: heroFadeUp 0.7s ease forwards;
+  animation-delay: 0.2s;
+}
+
+.hero .carousel-item.active .container h2,
+.hero .carousel-item.active .container p,
+.hero .carousel-item.active .container > .d-flex {
+  opacity: 0;
+  animation: heroFadeUp 0.6s ease forwards;
+}
+
+.hero .carousel-item.active .container h2 {
+  animation-delay: 0.45s;
+}
+
+.hero .carousel-item.active .container p {
+  animation-delay: 0.6s;
+}
+
+.hero .carousel-item.active .container > .d-flex {
+  animation-delay: 0.75s;
+}
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero .hero-bg,
+  .hero .container,
+  .hero .container h2,
+  .hero .container p,
+  .hero .container > .d-flex {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 .hero h2 {

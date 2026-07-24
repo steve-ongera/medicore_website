@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 // Import hero images
@@ -28,14 +28,6 @@ const Hero = ({ settings }) => {
     }
   ];
 
-  // Debug: confirms whether Vite actually resolved these imports to real URLs.
-  // If any of these log as `undefined`, the import path/filename/case is wrong.
-  // If they log a real string but the slide is still blank, it's a CSS/height
-  // issue further down the carousel-inner / hero-carousel chain, not the image.
-  useEffect(() => {
-    console.log('Hero images loaded:', { hero1, hero2, hero3 });
-  }, []);
-
   return (
     <section id="hero" className="hero section" style={{ minHeight: '70vh' }}>
       <div
@@ -50,17 +42,21 @@ const Hero = ({ settings }) => {
             <div
               key={slide.id}
               className={`carousel-item ${index === 0 ? 'active' : ''}`}
-              style={{
-                backgroundColor: '#0d3b66', // visible fallback if the image 404s
-                backgroundImage: `url(${slide.image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                height: '70vh',
-                width: '100%',
-              }}
+              style={{ height: '70vh', width: '100%' }}
             >
-              <div className="container" data-aos="fade-up" data-aos-delay={100 + (index * 100)}>
+              {/* Separate layer for the photo. The CSS animates this with a
+                  slow continuous zoom (Ken Burns effect) whenever this slide
+                  is active — kept apart from .container so the text card
+                  doesn't scale along with the image. */}
+              <div
+                className="hero-bg"
+                style={{
+                  backgroundColor: '#0d3b66', // visible fallback if the image 404s
+                  backgroundImage: `url(${slide.image})`,
+                }}
+              ></div>
+
+              <div className="container">
                 <h2>{slide.title}</h2>
                 <p>{slide.description}</p>
                 <div className="d-flex justify-content-center gap-3 flex-wrap">
