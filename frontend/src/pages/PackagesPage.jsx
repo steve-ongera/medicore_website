@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getPackages, getFAQs } from "../services/api.js";
 import PackageCard from "../components/PackageCard.jsx";
+import useSEO from "../hooks/useSEO.js";
 
 export default function PackagesPage() {
   const [packages, setPackages] = useState([]);
@@ -28,6 +29,65 @@ export default function PackagesPage() {
   const toggleFaq = (id) => {
     setOpenFaqId(openFaqId === id ? null : id);
   };
+
+  // Builds an ItemList/Offer schema for the packages and an FAQPage
+  // schema from the loaded FAQs, combined under @graph. FAQPage schema
+  // is what makes the accordion questions eligible for rich results.
+  // Only published once both have actually loaded.
+  const schema = useMemo(() => {
+    if (isLoading) return undefined;
+
+    const graph = [];
+
+    if (packages.length > 0) {
+      graph.push({
+        "@type": "ItemList",
+        name: "Medicore HMIS Packages",
+        itemListElement: packages.map((pkg, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          item: {
+            "@type": "Product",
+            name: pkg.name,
+            description: pkg.tagline || undefined,
+            offers: {
+              "@type": "Offer",
+              price: pkg.price ?? undefined,
+              priceCurrency: "KES",
+              url: `https://medicorehmis.co.ke/packages/${pkg.slug}`,
+            },
+          },
+        })),
+      });
+    }
+
+    if (faqs.length > 0) {
+      graph.push({
+        "@type": "FAQPage",
+        mainEntity: faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
+        })),
+      });
+    }
+
+    if (graph.length === 0) return undefined;
+
+    return { "@context": "https://schema.org", "@graph": graph };
+  }, [packages, faqs, isLoading]);
+
+  useSEO({
+    title: "Packages & Pricing",
+    description:
+      "Compare Medicore HMIS packages for clinics, nursing homes and hospitals in Kenya. Every package includes SHA and eTIMS compliance modules.",
+    keywords: "HMIS pricing Kenya, hospital software packages, clinic management system pricing, SHA eTIMS software cost",
+    path: "/packages",
+    schema,
+  });
 
   return (
     <main className="main">

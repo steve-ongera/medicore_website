@@ -10,6 +10,8 @@ function formatPrice(price) {
 }
 
 export default function PackageCard({ pkg }) {
+  const hasPrice = pkg.price !== null && pkg.price !== undefined;
+
   return (
     <div className={`pricing-item ${pkg.is_featured ? 'featured' : ''}`}>
       {/* Featured Badge */}
@@ -18,11 +20,11 @@ export default function PackageCard({ pkg }) {
       {/* Package Name */}
       <h3>{pkg.name}</h3>
       
-      {/* Price */}
+      {/* Price — was rendering a hardcoded "$" + raw number instead of
+          the KES-formatted value that formatPrice() already computes. */}
       <h4>
-        <sup>$</sup>
-        {pkg.price ? pkg.price : 'Contact'}
-        <span> {pkg.price ? `/ ${pkg.billing_cycle}` : ''}</span>
+        {formatPrice(pkg.price)}
+        {hasPrice && <span> / {pkg.billing_cycle}</span>}
       </h4>
       
       {/* Features List */}
@@ -64,7 +66,7 @@ export default function PackageCard({ pkg }) {
       {/* CTA Button */}
       <div className="btn-wrap">
         <Link to={`/packages/${pkg.slug}`} className="btn-buy">
-          {pkg.price ? 'Get Started' : 'Contact Us'}
+          {hasPrice ? 'Get Started' : 'Contact Us'}
         </Link>
       </div>
     </div>

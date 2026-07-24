@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getTeamMembers } from "../services/api.js";
+import useSEO from "../hooks/useSEO.js";
 import aboutImg from "../assets/img/about.jpg";
 
 const VALUES = [
@@ -35,6 +36,32 @@ export default function AboutPage() {
       isMounted = false;
     };
   }, []);
+
+  const schema = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      name: "About Medicore HMIS",
+      description:
+        "Medicore HMIS builds SHA-ready, eTIMS-compliant hospital management software for clinics, nursing homes and hospitals across Kenya.",
+      mainEntity: {
+        "@type": "Organization",
+        name: "Medicore HMIS",
+        url: "https://medicorehmis.co.ke",
+        areaServed: "Kenya",
+      },
+    }),
+    []
+  );
+
+  useSEO({
+    title: "About Us",
+    description:
+      "Medicore HMIS is built for Kenyan healthcare facilities — SHA and eTIMS compliant, M-Pesa billing, bed management and patient records in one platform.",
+    keywords: "about Medicore HMIS, HMIS Kenya company, hospital software Kenya team, SHA compliant software company",
+    path: "/about",
+    schema,
+  });
 
   return (
     <main className="main">
@@ -80,6 +107,7 @@ export default function AboutPage() {
                 src={aboutImg} 
                 className="img-fluid rounded" 
                 alt="About Medicore HMIS" 
+                loading="lazy"
                 style={{ borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
               />
               <a 
@@ -178,6 +206,7 @@ export default function AboutPage() {
                           src={member.photo} 
                           className="img-fluid" 
                           alt={member.name} 
+                          loading="lazy"
                           style={{ width: '100%', height: '300px', objectFit: 'cover' }}
                         />
                       ) : (

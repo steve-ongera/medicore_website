@@ -1,7 +1,7 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getServices } from '../services/api.js';
+import useSEO from '../hooks/useSEO.js';
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
@@ -32,6 +32,41 @@ const ServicesPage = () => {
     "fas fa-stethoscope",
     "fas fa-ambulance"
   ];
+
+  // Only build the ItemList schema once services have actually loaded,
+  // so we don't publish an empty list to search engines during fetch.
+  const schema = useMemo(() => {
+    if (isLoading || services.length === 0) return undefined;
+    return {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "Medicore HMIS Services",
+      itemListElement: services.map((service, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "Service",
+          name: service.name,
+          description: service.short_description,
+          url: `https://medicorehmis.co.ke/services/${service.slug}`,
+          provider: {
+            "@type": "Organization",
+            name: "Medicore HMIS",
+          },
+          areaServed: "Kenya",
+        },
+      })),
+    };
+  }, [services, isLoading]);
+
+  useSEO({
+    title: "Our Services",
+    description:
+      "Explore Medicore HMIS modules — from patient records and bed management to SHA claims and eTIMS-compliant billing — built for hospitals and clinics in Kenya.",
+    keywords: "HMIS services Kenya, hospital management modules, SHA claims software, eTIMS billing software, clinic management system Kenya",
+    path: "/services",
+    schema,
+  });
 
   return (
     <main className="main">

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { submitContactMessage, getSiteSettings } from '../services/api.js';
+import useSEO from '../hooks/useSEO.js';
 
 const ContactPage = () => {
   const [settings, setSettings] = useState(null);
@@ -24,6 +25,41 @@ const ContactPage = () => {
     };
     fetchSettings();
   }, []);
+
+  const schema = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "ContactPage",
+      name: "Contact Medicore HMIS",
+      mainEntity: {
+        "@type": "Organization",
+        name: "Medicore HMIS",
+        url: "https://medicorehmis.co.ke",
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: settings?.support_phone || "+254 700 000000",
+          email: settings?.support_email || "support@medicorehmis.co.ke",
+          contactType: "customer support",
+          areaServed: "KE",
+        },
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: settings?.address || "Nairobi",
+          addressCountry: "KE",
+        },
+      },
+    }),
+    [settings]
+  );
+
+  useSEO({
+    title: "Contact Us",
+    description:
+      "Get in touch with Medicore HMIS for a demo, support, or sales questions. Based in Nairobi, serving hospitals and clinics across Kenya.",
+    keywords: "contact Medicore HMIS, HMIS Kenya support, hospital software demo Kenya, Nairobi HMIS company",
+    path: "/contact",
+    schema,
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
