@@ -1,59 +1,93 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { getPricing } from '../services/api.js';
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { getPackages, getFAQs } from "../services/api.js";
+import PackageCard from "../components/PackageCard.jsx";
+import useSEO from "../hooks/useSEO.js";
 
-const PricingPage = () => {
+export default function PricingPage() {
   const [packages, setPackages] = useState([]);
+  const [faqs, setFaqs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [openFaqId, setOpenFaqId] = useState(null);
 
   useEffect(() => {
-    const fetchPackages = async () => {
-      try {
-        const data = await getPricing();
-        setPackages(data);
-      } catch (error) {
-        // Use fallback data if API fails
-        setPackages([
-          {
-            id: 1,
-            name: "Starter",
-            slug: "starter",
-            price: 8500,
-            billing_cycle: "monthly",
-            max_beds: 0,
-            max_users: 5,
-            is_featured: false,
-            modules: []
-          },
-          {
-            id: 2,
-            name: "Standard",
-            slug: "standard",
-            price: 22000,
-            billing_cycle: "monthly",
-            max_beds: 60,
-            max_users: 25,
-            is_featured: true,
-            modules: []
-          },
-          {
-            id: 3,
-            name: "Enterprise",
-            slug: "enterprise",
-            price: null,
-            billing_cycle: "one_time",
-            max_beds: null,
-            max_users: null,
-            is_featured: false,
-            modules: []
-          }
-        ]);
-      } finally {
-        setIsLoading(false);
-      }
+    let isMounted = true;
+    Promise.all([getPackages(), getFAQs()])
+      .then(([packagesData, faqsData]) => {
+        if (!isMounted) return;
+        setPackages(packagesData);
+        setFaqs(faqsData);
+      })
+      .catch((err) => isMounted && setError(err.message))
+      .finally(() => isMounted && setIsLoading(false));
+    return () => {
+      isMounted = false;
     };
-    fetchPackages();
   }, []);
+
+  const toggleFaq = (id) => {
+    setOpenFaqId(openFaqId === id ? null : id);
+  };
+
+  // Builds an ItemList/Offer schema for the packages and an FAQPage
+  // schema from the loaded FAQs, combined under @graph. FAQPage schema
+  // is what makes the accordion questions eligible for rich results.
+  // Only published once both have actually loaded.
+  const schema = useMemo(() => {
+    if (isLoading) return undefined;
+
+    const graph = [];
+
+    if (packages.length > 0) {
+      graph.push({
+        "@type": "ItemList",
+        name: "Medicore HMIS Packages",
+        itemListElement: packages.map((pkg, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          item: {
+            "@type": "Product",
+            name: pkg.name,
+            description: pkg.tagline || undefined,
+            offers: {
+              "@type": "Offer",
+              price: pkg.price ?? undefined,
+              priceCurrency: "KES",
+              url: `https://medicorehmis.co.ke/packages/${pkg.slug}`,
+            },
+          },
+        })),
+      });
+    }
+
+    if (faqs.length > 0) {
+      graph.push({
+        "@type": "FAQPage",
+        mainEntity: faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
+        })),
+      });
+    }
+
+    if (graph.length === 0) return undefined;
+
+    return { "@context": "https://schema.org", "@graph": graph };
+  }, [packages, faqs, isLoading]);
+
+  useSEO({
+    title: "Packages & Pricing",
+    description:
+      "Compare Medicore HMIS packages for clinics, nursing homes and hospitals in Kenya. Every package includes SHA and eTIMS compliance modules.",
+    keywords: "HMIS pricing Kenya, hospital software packages, clinic management system pricing, SHA eTIMS software cost",
+    path: "/packages",
+    schema,
+  });
 
   return (
     <main className="main">
@@ -63,9 +97,10 @@ const PricingPage = () => {
           <div className="container">
             <div className="row d-flex justify-content-center text-center">
               <div className="col-lg-8">
-                <h1>Pricing</h1>
+                <h1>Packages &amp; Pricing</h1>
                 <p className="mb-0">
-                  Choose the package that fits your facility's needs
+                  A package for every facility size. All packages include SHA 
+                  and eTIMS compliance modules.
                 </p>
               </div>
             </div>
@@ -75,70 +110,112 @@ const PricingPage = () => {
           <div className="container">
             <ol>
               <li><Link to="/">Home</Link></li>
-              <li className="current">Pricing</li>
+              <li className="current">Packages</li>
             </ol>
           </div>
         </nav>
       </div>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="pricing section">
+      {/* Packages Section */}
+      <section id="packages" className="pricing section">
+        <div className="container section-title" data-aos="fade-up">
+          <h2>Choose Your Package</h2>
+          <p>
+            Compare beds, staff accounts and module coverage below. 
+            All packages include SHA and eTIMS compliance modules.
+          </p>
+        </div>
+
         <div className="container">
-          <div className="row gy-3">
-            {isLoading ? (
-              <div className="text-center">Loading packages...</div>
-            ) : (
-              packages.map((pkg, index) => (
+          {isLoading ? (
+            <div className="text-center py-5" data-aos="fade-up">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading packages...</span>
+              </div>
+              <p className="mt-3">Loading packages…</p>
+            </div>
+          ) : error ? (
+            <div className="alert alert-danger text-center" role="alert">
+              <i className="bi bi-exclamation-triangle me-2"></i>
+              {error}
+            </div>
+          ) : (
+            <div className="row gy-4">
+              {packages.map((pkg, index) => (
                 <div 
                   key={pkg.id}
                   className="col-xl-3 col-lg-6" 
                   data-aos="fade-up" 
                   data-aos-delay={100 + (index * 100)}
                 >
-                  <div className={`pricing-item ${pkg.is_featured ? 'featured' : ''}`}>
-                    {pkg.is_featured && <span className="advanced">Featured</span>}
-                    <h3>{pkg.name}</h3>
-                    <h4>
-                      <sup>$</sup>
-                      {pkg.price ? pkg.price : 'Contact'}
-                      <span> {pkg.price ? `/ ${pkg.billing_cycle}` : ''}</span>
-                    </h4>
-                    <ul>
-                      <li>
-                        <i className="bi bi-check"></i> 
-                        {pkg.max_beds !== null ? `${pkg.max_beds} Beds` : 'Unlimited Beds'}
-                      </li>
-                      <li>
-                        <i className="bi bi-check"></i> 
-                        {pkg.max_users !== null ? `${pkg.max_users} Users` : 'Unlimited Users'}
-                      </li>
-                      <li>
-                        <i className="bi bi-check"></i> 
-                        {pkg.modules && pkg.modules.length > 0 
-                          ? `${pkg.modules.length} Modules` 
-                          : 'Core Modules'}
-                      </li>
-                      <li>
-                        <i className="bi bi-check"></i> 
-                        {pkg.billing_cycle === 'monthly' ? 'Monthly Billing' : 
-                         pkg.billing_cycle === 'annually' ? 'Annual Billing' : 
-                         'Custom Billing'}
-                      </li>
-                    </ul>
-                    <div className="btn-wrap">
-                      <Link to={`/packages/${pkg.slug}`} className="btn-buy">
-                        {pkg.price ? 'Get Started' : 'Contact Us'}
-                      </Link>
-                    </div>
-                  </div>
+                  <PackageCard pkg={pkg} />
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
+
+          {/* Compare Packages CTA */}
+          {!isLoading && packages.length > 0 && (
+            <div className="text-center mt-5" data-aos="fade-up">
+              <p className="text-muted mb-3">
+                Need a custom package for your facility?
+              </p>
+              <Link to="/contact" className="btn btn-buy" style={{
+                background: 'var(--accent-color)',
+                color: 'var(--contrast-color)',
+                padding: '12px 40px',
+                borderRadius: '4px',
+                textDecoration: 'none',
+                display: 'inline-block',
+                transition: '0.3s'
+              }}>
+                <i className="bi bi-envelope me-2"></i>
+                Contact Us for Custom Quote
+              </Link>
+            </div>
+          )}
         </div>
       </section>
+
+      {/* FAQ Section */}
+      {faqs.length > 0 && (
+        <section id="faq" className="faq section light-background">
+          <div className="container section-title" data-aos="fade-up">
+            <h2>Frequently Asked Questions</h2>
+            <p>Common questions about our packages and services</p>
+          </div>
+
+          <div className="container">
+            <div className="row justify-content-center">
+              <div className="col-lg-10" data-aos="fade-up" data-aos-delay="100">
+                <div className="faq-container">
+                  {faqs.map((faq, index) => {
+                    const isOpen = openFaqId === faq.id;
+                    return (
+                      <div 
+                        key={faq.id}
+                        className={`faq-item ${isOpen ? 'faq-active' : ''}`}
+                      >
+                        <h3 onClick={() => toggleFaq(faq.id)}>
+                          <span className="num">{String(index + 1).padStart(2, '0')}.</span> 
+                          {faq.question}
+                        </h3>
+                        <div className="faq-content">
+                          <p>{faq.answer}</p>
+                        </div>
+                        <i 
+                          className={`faq-toggle bi ${isOpen ? 'bi-chevron-down' : 'bi-chevron-right'}`}
+                          onClick={() => toggleFaq(faq.id)}
+                        ></i>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </main>
   );
-};
-
-export default PricingPage;
+}
