@@ -804,6 +804,18 @@ section,
   will-change: transform;
 }
 
+/* Darkening gradient behind the text card, separate from .hero-bg so the
+   Ken Burns zoom doesn't scale it. This is what lets .container go fully
+   transparent below and still keep the text readable over any photo. */
+.hero .carousel-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.55) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
 /* Slow continuous zoom on whichever slide is currently active. Because
    Bootstrap's carousel toggles the .active class on/off as slides change,
    this animation naturally restarts every time a slide becomes active
@@ -822,17 +834,18 @@ section,
 }
 
 .hero .container {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   position: relative;
   text-align: center;
   padding: 40px;
   margin-bottom: 60px;
   border-radius: 12px;
-  border-top: 4px solid var(--accent-color);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   z-index: 3;
   max-width: 800px;
-  box-shadow: 0 10px 40px var(--shadow-color);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
   opacity: 0;
   transform: translateY(30px);
 }
@@ -891,7 +904,13 @@ section,
   margin-bottom: 20px;
   font-size: 38px;
   font-weight: 700;
-  color: var(--heading-color);
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.hero .container p {
+  color: #f2f2f2;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
 }
 
 @media (max-width: 768px) {
@@ -925,12 +944,13 @@ section,
 }
 
 .hero .btn-get-started--secondary {
-  background: var(--heading-color);
-  box-shadow: 0 4px 15px rgba(45, 45, 45, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: none;
 }
 
 .hero .btn-get-started--secondary:hover {
-  background: #1a1a1a;
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .hero .carousel-control-prev,
