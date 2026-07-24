@@ -72,17 +72,20 @@ export default function Navbar() {
           </Link>
 
           <nav id="navmenu" className={`navmenu ${isOpen ? "mobile-nav-active" : ""}`}>
-            {/* Close Button for Mobile — the single, dedicated control for
-                closing the sidebar. The hamburger toggle below hides itself
-                via CSS while the sidebar is open, so there's only ever one
-                close icon visible at a time. */}
-            <button
-              className="mobile-nav-close d-xl-none"
-              onClick={closeMobileMenu}
-              aria-label="Close navigation"
-            >
-              <i className="bi bi-x-lg"></i>
-            </button>
+            {/* Close Button for Mobile — rendered ONLY while the sidebar is
+                actually open (isOpen === true), not just hidden with CSS.
+                Combined with the toggle button below (rendered only when
+                !isOpen), this guarantees the close icon and hamburger can
+                never both be on screen — or both be absent — at once. */}
+            {isOpen && (
+              <button
+                className="mobile-nav-close d-xl-none"
+                onClick={closeMobileMenu}
+                aria-label="Close navigation"
+              >
+                <i className="bi bi-x-lg"></i>
+              </button>
+            )}
 
             <ul>
               {NAV_LINKS.map((link) => (
