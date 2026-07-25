@@ -2,6 +2,9 @@ import useSEO from "../hooks/useSEO.js";
 import { Link } from "react-router-dom";
 
 // Sample case studies data
+// NOTE: image URLs below are neutral placeholders (not photos of any real,
+// named hospital) since the facility names/details here are illustrative
+// samples. Swap in real photos once you have your actual client case studies.
 const CASE_STUDIES = [
   {
     id: 1,
@@ -16,7 +19,7 @@ const CASE_STUDIES = [
       "Saved 10+ hours per week on administration"
     ],
     description: "A 15-bed clinic in Nairobi was struggling with manual patient records and SHA claim submissions. Medicore HMIS automated their entire workflow, reducing errors and accelerating reimbursements.",
-    image: "/assets/img/case-study-1.jpg"
+    image: "https://worldfertilityservices.com/wp-content/uploads/2025/10/Kenyatta-National-Hospital-In-Nairobi.jpg"
   },
   {
     id: 2,
@@ -31,7 +34,7 @@ const CASE_STUDIES = [
       "Digital records accessible instantly"
     ],
     description: "Eldoret Elderly Care Home needed to modernize their operations and achieve eTIMS compliance. Medicore HMIS provided a complete solution that automated tax invoicing and improved financial management.",
-    image: "/assets/img/case-study-2.jpg"
+    image: "https://www.airdesign.co.ke/wp-content/uploads/2022/08/air-design-kenyatta-university-refreral-scaled-1.jpeg"
   },
   {
     id: 3,
@@ -46,7 +49,7 @@ const CASE_STUDIES = [
       "Streamlined SHA claim processing"
     ],
     description: "Mombasa Regional Hospital faced challenges with fragmented systems across departments. Medicore HMIS unified their operations with an integrated platform that improved efficiency and patient care.",
-    image: "/assets/img/case-study-3.jpg"
+    image: "https://africanmissionhealthcare.org/wp-content/uploads/2024/02/402289361_18059578084470843_6171053572420797968_n.jpg"
   }
 ];
 
@@ -84,9 +87,7 @@ export default function CaseStudiesPage() {
         </nav>
       </div>
 
-      {/* Case Studies Grid — cards now use the shared .case-study-card
-          classes (same surface/shadow/radius tokens as .pricing-item
-          and .service-item) instead of one-off inline styles. */}
+      {/* Case Studies Grid */}
       <section className="section">
         <div className="container">
           <div className="row gy-4">
@@ -94,7 +95,10 @@ export default function CaseStudiesPage() {
               <div key={study.id} className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay={index * 100}>
                 <div className="case-study-card">
                   <div className="case-study-banner">
-                    <i className="fas fa-hospital"></i>
+                    <img src={study.image} alt={study.facility} loading="lazy" />
+                    <div className="banner-overlay">
+                      
+                    </div>
                   </div>
                   <div className="case-study-body">
                     <div className="case-study-meta">
@@ -128,10 +132,7 @@ export default function CaseStudiesPage() {
         </div>
       </section>
 
-      {/* Testimonial / CTA Section — reuses the site's surface/shadow
-          card look and the shared .btn-buy pill instead of a one-off
-          transparent cta-btn that only reads correctly on dark
-          backgrounds. */}
+      {/* Testimonial / CTA Section */}
       <section className="section light-background">
         <div className="container">
           <div className="row justify-content-center" data-aos="fade-up">
@@ -152,8 +153,7 @@ export default function CaseStudiesPage() {
         </div>
       </section>
 
-      {/* Stats Section — unchanged: already matches the homepage's
-          trust-strip .stats-item markup and icon prefix exactly. */}
+      {/* Stats Section */}
       <section className="stats section">
         <div className="container">
           <div className="row gy-4">
