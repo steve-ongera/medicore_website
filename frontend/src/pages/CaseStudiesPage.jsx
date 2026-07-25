@@ -84,41 +84,40 @@ export default function CaseStudiesPage() {
         </nav>
       </div>
 
-      {/* Case Studies Grid */}
+      {/* Case Studies Grid — cards now use the shared .case-study-card
+          classes (same surface/shadow/radius tokens as .pricing-item
+          and .service-item) instead of one-off inline styles. */}
       <section className="section">
         <div className="container">
           <div className="row gy-4">
             {CASE_STUDIES.map((study, index) => (
               <div key={study.id} className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay={index * 100}>
-                <div className="card h-100" style={{ border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", borderRadius: "12px", overflow: "hidden" }}>
-                  <div style={{ height: "200px", background: "linear-gradient(135deg, var(--accent-color), var(--accent-dark))", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "48px" }}>
+                <div className="case-study-card">
+                  <div className="case-study-banner">
                     <i className="fas fa-hospital"></i>
                   </div>
-                  <div className="card-body p-4">
-                    <div className="d-flex justify-content-between mb-2">
-                      <span style={{ fontSize: "12px", color: "var(--accent-color)", fontWeight: "600", textTransform: "uppercase", letterSpacing: "1px" }}>
-                        {study.type}
-                      </span>
-                      <span style={{ fontSize: "12px", color: "#6c757d" }}>
-                        {study.size}
-                      </span>
+                  <div className="case-study-body">
+                    <div className="case-study-meta">
+                      <span className="case-study-type">{study.type}</span>
+                      <span className="case-study-size">{study.size}</span>
                     </div>
-                    <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>{study.title}</h3>
-                    <p style={{ fontSize: "14px", color: "#6c757d", marginBottom: "12px" }}>
-                      <i className="bi bi-building me-1"></i> {study.facility}
+                    <h3>{study.title}</h3>
+                    <p className="case-study-facility">
+                      <i className="bi bi-building"></i> {study.facility}
                     </p>
-                    <p style={{ fontSize: "14px", lineHeight: "1.6", marginBottom: "16px" }}>
-                      {study.description}
-                    </p>
-                    <div style={{ marginBottom: "16px" }}>
-                      <p style={{ fontSize: "13px", fontWeight: "600", marginBottom: "6px" }}>Key Results:</p>
-                      <ul style={{ fontSize: "13px", paddingLeft: "20px", margin: 0 }}>
+                    <p className="case-study-description">{study.description}</p>
+                    <div className="case-study-results">
+                      <p className="case-study-results-label">Key Results:</p>
+                      <ul>
                         {study.results.map((result, idx) => (
-                          <li key={idx}>{result}</li>
+                          <li key={idx}>
+                            <i className="bi bi-check-circle"></i>
+                            {result}
+                          </li>
                         ))}
                       </ul>
                     </div>
-                    <Link to="/appointment" style={{ fontSize: "14px", fontWeight: "600", color: "var(--accent-color)", textDecoration: "none" }}>
+                    <Link to="/appointment" className="case-study-link">
                       Read Full Story <i className="bi bi-arrow-right"></i>
                     </Link>
                   </div>
@@ -129,19 +128,22 @@ export default function CaseStudiesPage() {
         </div>
       </section>
 
-      {/* Testimonial / CTA Section */}
+      {/* Testimonial / CTA Section — reuses the site's surface/shadow
+          card look and the shared .btn-buy pill instead of a one-off
+          transparent cta-btn that only reads correctly on dark
+          backgrounds. */}
       <section className="section light-background">
         <div className="container">
           <div className="row justify-content-center" data-aos="fade-up">
             <div className="col-lg-10">
-              <div className="text-center p-4" style={{ background: "var(--surface-color)", borderRadius: "12px" }}>
-                <i className="bi bi-quote" style={{ fontSize: "48px", color: "var(--accent-color)", opacity: "0.5" }}></i>
-                <blockquote className="mb-4" style={{ fontSize: "20px", fontStyle: "italic" }}>
-                  "Medicore HMIS transformed our operations. We're now fully SHA and eTIMS compliant, 
+              <div className="case-study-quote">
+                <i className="bi bi-quote quote-icon"></i>
+                <blockquote>
+                  "Medicore HMIS transformed our operations. We're now fully SHA and eTIMS compliant,
                   and our staff can focus more on patients instead of paperwork."
                 </blockquote>
-                <p style={{ fontWeight: "600" }}>— Dr. Sarah Wanjiru, Nairobi Family Health Center</p>
-                <Link to="/appointment" className="cta-btn" style={{ marginTop: "20px", display: "inline-block" }}>
+                <p className="case-study-author">— Dr. Sarah Wanjiru, Nairobi Family Health Center</p>
+                <Link to="/appointment" className="btn-buy mt-4 d-inline-block">
                   <i className="bi bi-calendar-check me-1"></i> Book a Demo
                 </Link>
               </div>
@@ -150,7 +152,8 @@ export default function CaseStudiesPage() {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Stats Section — unchanged: already matches the homepage's
+          trust-strip .stats-item markup and icon prefix exactly. */}
       <section className="stats section">
         <div className="container">
           <div className="row gy-4">

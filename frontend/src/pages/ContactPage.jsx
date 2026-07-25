@@ -108,100 +108,91 @@ const ContactPage = () => {
         </nav>
       </div>
 
-      {/* Contact Section */}
+      {/* Contact Section — the embedded Google Map never actually
+          rendered anything useful (placeholder pin, no real address),
+          so it's dropped in favor of a clean 3-column info bar above
+          a centered form. */}
       <section id="contact" className="contact section">
         <div className="container section-title" data-aos="fade-up">
           <h2>Contact</h2>
           <p>We'd love to hear from you</p>
         </div>
 
-        {/* Google Maps */}
-        <div className="mb-5" data-aos="fade-up" data-aos-delay="200">
-          <iframe 
-            style={{ border: 0, width: '100%', height: '370px' }} 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d255282.35853743783!2d36.682197!3d-1.286389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2s!4v1700000000000" 
-            allowFullScreen 
-            loading="lazy" 
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Medicore HMIS Location"
-          ></iframe>
-        </div>
-
-        <div className="container" data-aos="fade-up" data-aos-delay="100">
-          <div className="row gy-4">
-            <div className="col-lg-6">
-              <div className="row gy-4">
-                <div className="col-lg-12">
-                  <div className="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="200">
-                    <i className="bi bi-geo-alt"></i>
-                    <h3>Address</h3>
-                    <p>{settings?.address || 'Nairobi, Kenya'}</p>
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="300">
-                    <i className="bi bi-telephone"></i>
-                    <h3>Call Us</h3>
-                    <p>{settings?.support_phone || '+254 700 000000'}</p>
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="400">
-                    <i className="bi bi-envelope"></i>
-                    <h3>Email Us</h3>
-                    <p>{settings?.support_email || 'support@medicorehmis.co.ke'}</p>
-                  </div>
-                </div>
+        <div className="container">
+          {/* Info bar */}
+          <div className="row gy-4 mb-5" data-aos="fade-up" data-aos-delay="100">
+            <div className="col-lg-4 col-md-6">
+              <div className="info-item d-flex flex-column justify-content-center align-items-center h-100">
+                <i className="bi bi-geo-alt"></i>
+                <h3>Address</h3>
+                <p>{settings?.address || 'Nairobi, Kenya'}</p>
               </div>
             </div>
 
-            <div className="col-lg-6">
-              <form onSubmit={handleSubmit} className="php-email-form" data-aos="fade-up" data-aos-delay="500">
+            <div className="col-lg-4 col-md-6">
+              <div className="info-item d-flex flex-column justify-content-center align-items-center h-100">
+                <i className="bi bi-telephone"></i>
+                <h3>Call Us</h3>
+                <p>{settings?.support_phone || '+254 700 000000'}</p>
+              </div>
+            </div>
+
+            <div className="col-lg-4 col-md-6">
+              <div className="info-item d-flex flex-column justify-content-center align-items-center h-100">
+                <i className="bi bi-envelope"></i>
+                <h3>Email Us</h3>
+                <p>{settings?.support_email || 'support@medicorehmis.co.ke'}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Form */}
+          <div className="row justify-content-center">
+            <div className="col-lg-8">
+              <form onSubmit={handleSubmit} className="php-email-form" data-aos="fade-up" data-aos-delay="200">
                 <div className="row gy-4">
                   <div className="col-md-6">
-                    <input 
-                      type="text" 
-                      name="name" 
-                      className="form-control" 
-                      placeholder="Your Name" 
+                    <input
+                      type="text"
+                      name="name"
+                      className="form-control"
+                      placeholder="Your Name"
                       value={formData.name}
                       onChange={handleChange}
-                      required 
+                      required
                     />
                   </div>
 
                   <div className="col-md-6">
-                    <input 
-                      type="email" 
-                      className="form-control" 
-                      name="email" 
-                      placeholder="Your Email" 
+                    <input
+                      type="email"
+                      className="form-control"
+                      name="email"
+                      placeholder="Your Email"
                       value={formData.email}
                       onChange={handleChange}
-                      required 
+                      required
                     />
                   </div>
 
                   <div className="col-md-12">
-                    <input 
-                      type="text" 
-                      className="form-control" 
-                      name="subject" 
-                      placeholder="Subject" 
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="subject"
+                      placeholder="Subject"
                       value={formData.subject}
                       onChange={handleChange}
-                      required 
+                      required
                     />
                   </div>
 
                   <div className="col-md-12">
-                    <textarea 
-                      className="form-control" 
-                      name="message" 
-                      rows="4" 
-                      placeholder="Message" 
+                    <textarea
+                      className="form-control"
+                      name="message"
+                      rows="5"
+                      placeholder="Message"
                       value={formData.message}
                       onChange={handleChange}
                       required
@@ -209,12 +200,25 @@ const ContactPage = () => {
                   </div>
 
                   <div className="col-md-12 text-center">
-                    {isSubmitting && <div className="loading">Loading...</div>}
+                    {isSubmitting && (
+                      <div className="d-flex justify-content-center align-items-center gap-2 mb-3">
+                        <div className="spinner-border spinner-border-sm text-primary" role="status">
+                          <span className="visually-hidden">Sending...</span>
+                        </div>
+                        <span>Sending your message…</span>
+                      </div>
+                    )}
                     {submitStatus === 'success' && (
-                      <div className="sent-message">Your message has been sent. Thank you!</div>
+                      <div className="alert alert-success text-center" role="alert">
+                        <i className="bi bi-check-circle me-2"></i>
+                        Your message has been sent. Thank you!
+                      </div>
                     )}
                     {submitStatus === 'error' && (
-                      <div className="error-message">Something went wrong. Please try again.</div>
+                      <div className="alert alert-danger text-center" role="alert">
+                        <i className="bi bi-exclamation-triangle me-2"></i>
+                        Something went wrong. Please try again.
+                      </div>
                     )}
                     <button type="submit" disabled={isSubmitting}>
                       {isSubmitting ? 'Sending...' : 'Send Message'}

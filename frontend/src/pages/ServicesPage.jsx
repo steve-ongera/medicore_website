@@ -22,15 +22,17 @@ const ServicesPage = () => {
     fetchServices();
   }, []);
 
+  // fa-solid, matching the icon set used in the homepage's Core
+  // Features grid (previously "fas fa-*", the older FA5-style prefix).
   const serviceIcons = [
-    "fas fa-heartbeat",
-    "fas fa-pills",
-    "fas fa-hospital-user",
-    "fas fa-dna",
-    "fas fa-wheelchair",
-    "fas fa-notes-medical",
-    "fas fa-stethoscope",
-    "fas fa-ambulance"
+    "fa-solid fa-heart-pulse",
+    "fa-solid fa-pills",
+    "fa-solid fa-hospital-user",
+    "fa-solid fa-dna",
+    "fa-solid fa-wheelchair-move",
+    "fa-solid fa-notes-medical",
+    "fa-solid fa-stethoscope",
+    "fa-solid fa-truck-medical",
   ];
 
   // Only build the ItemList schema once services have actually loaded,
@@ -94,20 +96,38 @@ const ServicesPage = () => {
         </nav>
       </div>
 
-      {/* Services Section */}
+      {/* Services Section — same section-title + service-item grid
+          pattern as the homepage's "Everything your facility needs"
+          section, so the two pages read as one system. */}
       <section id="services" className="services section">
+        <div className="container section-title" data-aos="fade-up">
+          <h2>Explore our modules</h2>
+          <p>
+            Every module below ships SHA and eTIMS-ready, and slots into
+            whichever Medicore package fits your facility.
+          </p>
+        </div>
+
         <div className="container">
-          <div className="row gy-4">
-            {isLoading ? (
-              <div className="text-center">Loading services...</div>
-            ) : error ? (
-              <div className="text-center text-danger">{error}</div>
-            ) : (
-              services.map((service, index) => (
-                <div 
+          {isLoading ? (
+            <div className="text-center py-5" data-aos="fade-up">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading services...</span>
+              </div>
+              <p className="mt-3">Loading services…</p>
+            </div>
+          ) : error ? (
+            <div className="alert alert-danger text-center" role="alert">
+              <i className="bi bi-exclamation-triangle me-2"></i>
+              {error}
+            </div>
+          ) : (
+            <div className="row gy-4">
+              {services.map((service, index) => (
+                <div
                   key={service.id}
-                  className="col-lg-4 col-md-6" 
-                  data-aos="fade-up" 
+                  className="col-lg-4 col-md-6"
+                  data-aos="fade-up"
                   data-aos-delay={100 + (index * 100)}
                 >
                   <div className="service-item position-relative">
@@ -120,9 +140,9 @@ const ServicesPage = () => {
                     <p>{service.short_description}</p>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </main>

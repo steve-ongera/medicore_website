@@ -116,7 +116,9 @@ export default function PackagesPage() {
         </nav>
       </div>
 
-      {/* Packages Section */}
+      {/* Packages Section — same pricing-item grid rhythm as the
+          homepage packages section (col-lg-4 col-md-6), so the cards
+          line up the same way whichever page you land on. */}
       <section id="packages" className="pricing section">
         <div className="container section-title" data-aos="fade-up">
           <h2>Choose Your Package</h2>
@@ -144,7 +146,7 @@ export default function PackagesPage() {
               {packages.map((pkg, index) => (
                 <div 
                   key={pkg.id}
-                  className="col-xl-3 col-lg-6" 
+                  className="col-lg-4 col-md-6" 
                   data-aos="fade-up" 
                   data-aos-delay={100 + (index * 100)}
                 >
@@ -160,14 +162,10 @@ export default function PackagesPage() {
               <p className="text-muted mb-3">
                 Need a custom package for your facility?
               </p>
-              <Link to="/contact" className="btn btn-buy" style={{
-                background: 'var(--accent-color)',
-                color: 'var(--contrast-color)',
-                padding: '12px 40px',
-                borderRadius: '4px',
-                textDecoration: 'none',
+              <Link to="/contact" className="btn-buy" style={{
                 display: 'inline-block',
-                transition: '0.3s'
+                padding: '12px 40px',
+                borderRadius: '30px',
               }}>
                 <i className="bi bi-envelope me-2"></i>
                 Contact Us for Custom Quote
