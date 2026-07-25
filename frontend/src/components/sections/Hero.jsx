@@ -61,10 +61,10 @@ const Hero = ({ settings }) => {
                 <p>{slide.description}</p>
                 <div className="d-flex justify-content-center gap-3 flex-wrap">
                   <Link to="/about" className="btn-get-started">
-                    Read More
+                    About Us
                   </Link>
                   <Link to="/appointment" className="btn-get-started btn-get-started--secondary">
-                    Book Appointment
+                    Book Demo
                   </Link>
                 </div>
               </div>

@@ -72,7 +72,7 @@ export const getTestimonials = (featuredOnly = false) =>
 export const getFAQs = () => client.get("/faqs/").then(toArray);
 
 // ---------------------------------------------------------------------
-// Team (Doctors)
+// Team (Developers )
 // ---------------------------------------------------------------------
 export const getTeamMembers = () => client.get("/team/").then(toArray);
 

@@ -7,9 +7,11 @@ const AppointmentPage = () => {
     name: '',
     email: '',
     phone: '',
-    date: '',
-    department: '',
-    doctor: '',
+    facility_name: '',
+    facility_type: '',
+    bed_capacity: '',
+    preferred_date: '',
+    interested_package: '',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,9 +34,11 @@ const AppointmentPage = () => {
         name: '',
         email: '',
         phone: '',
-        date: '',
-        department: '',
-        doctor: '',
+        facility_name: '',
+        facility_type: '',
+        bed_capacity: '',
+        preferred_date: '',
+        interested_package: '',
         message: ''
       });
     } catch (error) {
@@ -52,9 +56,9 @@ const AppointmentPage = () => {
           <div className="container">
             <div className="row d-flex justify-content-center text-center">
               <div className="col-lg-8">
-                <h1>Book an Appointment</h1>
+                <h1>Book a Demo</h1>
                 <p className="mb-0">
-                  Schedule a consultation with our healthcare professionals
+                  See Medicore HMIS in action and get a quote tailored to your facility
                 </p>
               </div>
             </div>
@@ -64,114 +68,140 @@ const AppointmentPage = () => {
           <div className="container">
             <ol>
               <li><Link to="/">Home</Link></li>
-              <li className="current">Appointment</li>
+              <li className="current">Book a Demo</li>
             </ol>
           </div>
         </nav>
       </div>
 
-      {/* Appointment Section */}
+      {/* Appointment / Demo Request Section */}
       <section id="appointment" className="appointment section light-background">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-8" data-aos="fade-up" data-aos-delay="100">
               <form onSubmit={handleSubmit} className="php-email-form">
+                {/* Contact details */}
                 <div className="row">
                   <div className="col-md-4 form-group">
-                    <input 
-                      type="text" 
-                      name="name" 
-                      className="form-control" 
-                      placeholder="Your Name" 
+                    <input
+                      type="text"
+                      name="name"
+                      className="form-control"
+                      placeholder="Your Name"
                       value={formData.name}
                       onChange={handleChange}
-                      required 
+                      required
                     />
                   </div>
                   <div className="col-md-4 form-group mt-3 mt-md-0">
-                    <input 
-                      type="email" 
-                      className="form-control" 
-                      name="email" 
-                      placeholder="Your Email" 
+                    <input
+                      type="email"
+                      className="form-control"
+                      name="email"
+                      placeholder="Your Email"
                       value={formData.email}
                       onChange={handleChange}
-                      required 
+                      required
                     />
                   </div>
                   <div className="col-md-4 form-group mt-3 mt-md-0">
-                    <input 
-                      type="tel" 
-                      className="form-control" 
-                      name="phone" 
-                      placeholder="Your Phone" 
+                    <input
+                      type="tel"
+                      className="form-control"
+                      name="phone"
+                      placeholder="Your Phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      required 
+                      required
                     />
                   </div>
                 </div>
+
+                {/* Facility details */}
                 <div className="row">
-                  <div className="col-md-4 form-group mt-3">
-                    <input 
-                      type="datetime-local" 
-                      name="date" 
-                      className="form-control" 
-                      placeholder="Appointment Date" 
-                      value={formData.date}
+                  <div className="col-md-6 form-group mt-3">
+                    <input
+                      type="text"
+                      name="facility_name"
+                      className="form-control"
+                      placeholder="Facility Name"
+                      value={formData.facility_name}
                       onChange={handleChange}
-                      required 
+                      required
                     />
                   </div>
-                  <div className="col-md-4 form-group mt-3">
-                    <select 
-                      name="department" 
-                      className="form-select" 
-                      value={formData.department}
+                  <div className="col-md-6 form-group mt-3">
+                    <select
+                      name="facility_type"
+                      className="form-select"
+                      value={formData.facility_type}
                       onChange={handleChange}
                       required
                     >
-                      <option value="">Select Department</option>
-                      <option value="Cardiology">Cardiology</option>
-                      <option value="Neurology">Neurology</option>
-                      <option value="Pediatrics">Pediatrics</option>
-                      <option value="Ophthalmology">Ophthalmology</option>
-                      <option value="Hepatology">Hepatology</option>
-                    </select>
-                  </div>
-                  <div className="col-md-4 form-group mt-3">
-                    <select 
-                      name="doctor" 
-                      className="form-select" 
-                      value={formData.doctor}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="">Select Doctor</option>
-                      <option value="Dr. Walter White">Dr. Walter White</option>
-                      <option value="Dr. Sarah Jhonson">Dr. Sarah Jhonson</option>
-                      <option value="Dr. William Anderson">Dr. William Anderson</option>
-                      <option value="Dr. Amanda Jepson">Dr. Amanda Jepson</option>
+                      <option value="">Facility Type</option>
+                      <option value="Clinic">Clinic</option>
+                      <option value="Nursing Home">Nursing Home</option>
+                      <option value="Hospital">Hospital</option>
+                      <option value="Other">Other</option>
                     </select>
                   </div>
                 </div>
 
+                <div className="row">
+                  <div className="col-md-4 form-group mt-3">
+                    <input
+                      type="number"
+                      min="1"
+                      name="bed_capacity"
+                      className="form-control"
+                      placeholder="Bed Capacity"
+                      value={formData.bed_capacity}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="col-md-4 form-group mt-3">
+                    <select
+                      name="interested_package"
+                      className="form-select"
+                      value={formData.interested_package}
+                      onChange={handleChange}
+                    >
+                      <option value="">Package Interested In</option>
+                      <option value="Essential">Essential</option>
+                      <option value="Standard">Standard</option>
+                      <option value="Premium">Premium</option>
+                      <option value="Not sure yet">Not sure yet</option>
+                    </select>
+                  </div>
+                  <div className="col-md-4 form-group mt-3">
+                    <input
+                      type="datetime-local"
+                      name="preferred_date"
+                      className="form-control"
+                      placeholder="Preferred Demo Date"
+                      value={formData.preferred_date}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+
                 <div className="form-group mt-3">
-                  <textarea 
-                    className="form-control" 
-                    name="message" 
-                    rows="5" 
-                    placeholder="Message (Optional)"
+                  <textarea
+                    className="form-control"
+                    name="message"
+                    rows="5"
+                    placeholder="Tell us about your facility's needs (Optional)"
                     value={formData.message}
                     onChange={handleChange}
                   ></textarea>
                 </div>
-                
+
                 <div className="mt-3">
                   {isSubmitting && <div className="loading">Loading...</div>}
                   {submitStatus === 'success' && (
                     <div className="sent-message">
-                      Your appointment request has been sent successfully. Thank you!
+                      Your demo request has been sent successfully. Our team will be in touch shortly!
                     </div>
                   )}
                   {submitStatus === 'error' && (
@@ -181,7 +211,7 @@ const AppointmentPage = () => {
                   )}
                   <div className="text-center">
                     <button type="submit" disabled={isSubmitting}>
-                      {isSubmitting ? 'Sending...' : 'Make an Appointment'}
+                      {isSubmitting ? 'Sending...' : 'Request Demo & Quote'}
                     </button>
                   </div>
                 </div>

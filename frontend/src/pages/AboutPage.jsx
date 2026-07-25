@@ -2,23 +2,62 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getTeamMembers } from "../services/api.js";
 import useSEO from "../hooks/useSEO.js";
-import aboutImg from "../assets/img/about2.jpg";
+import aboutImg from "../assets/img/about.jpg";
 
-const VALUES = [
+const PROBLEMS_SOLVED = [
   {
-    code: "01",
-    title: "Compliance-first",
-    text: "SHA and eTIMS requirements change fast. We ship updates the moment regulations shift, so facilities stay compliant automatically.",
+    icon: "bi bi-file-earmark-x",
+    problem: "The Problem",
+    title: "Paper trails delay SHA reimbursement",
+    text: "Manual claim forms and disconnected records mean rejected or delayed SHA claims — cash flow suffers while paperwork gets sorted out.",
   },
   {
-    code: "02",
-    title: "Built for local workflows",
-    text: "From bed boards to M-Pesa till reconciliation, every screen is designed around how Kenyan facilities actually operate.",
+    icon: "bi bi-diagram-3",
+    problem: "The Problem",
+    title: "Departments don't talk to each other",
+    text: "Billing, admissions, pharmacy, and records living in separate systems (or notebooks) means duplicated work and data that never quite matches.",
   },
   {
-    code: "03",
-    title: "Support that answers",
-    text: "Real onboarding, real training, and a support line staffed by people who understand hospital operations.",
+    icon: "bi bi-cash-coin",
+    problem: "The Problem",
+    title: "Regulations change faster than software",
+    text: "SHA and eTIMS requirements shift, and generic or outdated systems leave facilities scrambling to stay compliant — or exposed to penalties.",
+  },
+];
+
+// TODO: replace phone/email placeholders with real contact details.
+const CORE_TEAM = [
+  {
+    id: "core-1",
+    name: "Steve Ongera",
+    role: "Managing Director",
+    initials: "SO",
+    phone: "+254 700 000 001",
+    email: "steve@medicorehmis.co.ke",
+  },
+  {
+    id: "core-2",
+    name: "Team Member",
+    role: "Backend Developer",
+    initials: "BD",
+    phone: "",
+    email: "dev@medicorehmis.co.ke",
+  },
+  {
+    id: "core-3",
+    name: "Team Member",
+    role: "Sales Agent",
+    initials: "SA",
+    phone: "+254 700 000 003",
+    email: "sales@medicorehmis.co.ke",
+  },
+  {
+    id: "core-4",
+    name: "Team Member",
+    role: "Client Support Lead",
+    initials: "CS",
+    phone: "+254 700 000 004",
+    email: "support@medicorehmis.co.ke",
   },
 ];
 
@@ -29,13 +68,42 @@ const PROOF_STATS = [
   { icon: "fas fa-clock", value: "24/7", label: "System uptime monitoring" },
 ];
 
-// Inline styles for the new decorative bits, kept local to this page
-// rather than added to the shared stylesheet.
+// TODO: replace with your real founding story, milestones, and dates.
+const HISTORY_TIMELINE = [
+  {
+    year: "2022",
+    title: "The idea",
+    text: "Founded after seeing firsthand how much time clinics lost to manual SHA paperwork and disconnected billing systems.",
+  },
+  {
+    year: "2023",
+    title: "First facilities onboarded",
+    text: "Launched with a handful of clinics and nursing homes across Nairobi, refining the platform around real day-to-day workflows.",
+  },
+  {
+    year: "2024",
+    title: "eTIMS integration shipped",
+    text: "Added full eTIMS tax invoicing support as KRA requirements rolled out, keeping every facility on Medicore automatically compliant.",
+  },
+  {
+    year: "Today",
+    title: "40+ facilities nationwide",
+    text: "From small clinics to referral hospitals, Medicore now supports facilities across multiple counties with local, responsive support.",
+  },
+];
+
+// TODO: adjust to reflect your actual product modules/offerings.
+const WHAT_WE_OFFER = [
+  { icon: "bi bi-file-earmark-medical", title: "Patient Records", text: "Digital records, OP/IP admissions, and full patient history in one place." },
+  { icon: "bi bi-shield-check", title: "SHA & eTIMS", text: "Built-in compliance for claims and tax invoicing, updated as regulations change." },
+  { icon: "bi bi-hospital", title: "Bed Management", text: "Real-time bed availability across wards, admissions, and discharges." },
+  { icon: "bi bi-wallet2", title: "M-Pesa Billing", text: "Paybill and STK Push integration for fast, reconciled patient billing." },
+];
+
 const styles = {
   imageWrap: {
     position: "relative",
   },
-  // Removed accentBackdrop style object
   aboutImage: {
     position: "relative",
     zIndex: 1,
@@ -171,7 +239,6 @@ export default function AboutPage() {
           <div className="row gy-5 align-items-center">
             <div className="col-lg-6" data-aos="fade-up" data-aos-delay="100">
               <div style={styles.imageWrap}>
-                {/* Removed the accentBackdrop div */}
                 <img
                   src={aboutImg}
                   alt="Medicore HMIS dashboard in use at a Kenyan healthcare facility"
@@ -195,7 +262,7 @@ export default function AboutPage() {
             </div>
 
             <div className="col-lg-6 content" data-aos="fade-up" data-aos-delay="200">
-              <h2 style={{ marginBottom: "16px" }}>Built for Kenyan Healthcare</h2>
+              <h2 style={{ marginBottom: "14px" }}>Built for Kenyan Healthcare</h2>
               <p>
                 Medicore HMIS began with a simple question: why should compliance make healthcare harder? Built for Kenyan facilities, it is designed around SHA, eTIMS, and real hospital workflows.
               </p>
@@ -218,10 +285,7 @@ export default function AboutPage() {
                   <i className="bi bi-check-circle-fill me-2 mt-1" style={{ color: "var(--accent-color)" }}></i>
                   <span>Comprehensive bed management and patient records</span>
                 </li>
-                <li className="d-flex align-items-start mb-2">
-                  <i className="bi bi-check-circle-fill me-2 mt-1" style={{ color: "var(--accent-color)" }}></i>
-                  <span>Real-time reporting and analytics dashboards</span>
-                </li>
+               
               </ul>
 
               <div className="d-flex gap-3 flex-wrap mt-4">
@@ -256,30 +320,58 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Values Section */}
-      <section id="values" className="features section">
+      {/* History Section — who we are, milestones, what we offer */}
+      <section id="history" className="history-section section">
         <div className="container section-title" data-aos="fade-up">
-          <h2>Our Values</h2>
-          <p>The principles that guide everything we do</p>
+          <h2>Our Story</h2>
+          <p>Who we are and how Medicore came to be</p>
         </div>
 
         <div className="container">
-          <div className="row gy-4">
-            {VALUES.map((value, index) => (
+          <div className="history-intro" data-aos="fade-up">
+            <p>
+              Medicore HMIS started with a small team frustrated by watching hospitals
+              lose hours to paperwork that software should have handled years ago. What
+              began as a tool for a handful of Nairobi clinics has grown into a platform
+              trusted by 40+ facilities across Kenya — from independent clinics and
+              nursing homes to multi-department referral hospitals.
+            </p>
+          </div>
+
+          <div className="history-timeline">
+            {HISTORY_TIMELINE.map((item, index) => (
               <div
-                key={value.code}
-                className="col-lg-4 col-md-6"
+                className="history-item"
+                key={item.year}
                 data-aos="fade-up"
                 data-aos-delay={100 + index * 100}
               >
-                <div className="service-item position-relative h-100">
-                  <div className="icon">
-                    <span className="display-4 fw-bold" style={{ color: "var(--accent-color)" }}>
-                      {value.code}
-                    </span>
-                  </div>
-                  <h3>{value.title}</h3>
-                  <p>{value.text}</p>
+                <span className="history-dot"></span>
+                <div className="history-year">{item.year}</div>
+                <h4>{item.title}</h4>
+                <p>{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="container mt-5">
+          <div className="section-title" data-aos="fade-up">
+            <h2>What We Offer</h2>
+            <p>Everything a facility needs, in one platform</p>
+          </div>
+          <div className="row gy-4">
+            {WHAT_WE_OFFER.map((offer, index) => (
+              <div
+                className="col-lg-3 col-md-6"
+                key={offer.title}
+                data-aos="fade-up"
+                data-aos-delay={100 + index * 100}
+              >
+                <div className="history-offer-card">
+                  <i className={offer.icon}></i>
+                  <h4>{offer.title}</h4>
+                  <p>{offer.text}</p>
                 </div>
               </div>
             ))}
@@ -287,7 +379,91 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Team Section */}
+      {/* Problem / Solution Section */}
+      <section id="values" className="features section light-background">
+        <div className="container section-title" data-aos="fade-up">
+          <h2>Why Hospitals Choose Medicore</h2>
+          <p>The real problems facilities face — and how we solve them</p>
+        </div>
+
+        <div className="container">
+          <div className="row gy-4">
+            {PROBLEMS_SOLVED.map((item, index) => (
+              <div
+                key={item.title}
+                className="col-lg-4 col-md-6"
+                data-aos="fade-up"
+                data-aos-delay={100 + index * 100}
+              >
+                <div className="problem-solution-item h-100">
+                  <div className="ps-icon">
+                    <i className={item.icon}></i>
+                  </div>
+                  <p className="ps-problem">{item.problem}</p>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Leadership / Contact Team */}
+      <section id="core-team" className="doctors section">
+        <div className="container section-title" data-aos="fade-up">
+          <h2>Talk to the Team</h2>
+          <p>Reach out directly to the people running Medicore day to day</p>
+        </div>
+
+        <div className="container">
+          <div className="row gy-4 justify-content-center">
+            {CORE_TEAM.map((member, index) => (
+              <div
+                key={member.id}
+                className="col-lg-3 col-md-6 d-flex align-items-stretch"
+                data-aos="fade-up"
+                data-aos-delay={100 + index * 100}
+              >
+                <div className="team-member">
+                  <div className="member-img">
+                    <div
+                      className="img-fluid d-flex align-items-center justify-content-center"
+                      style={{
+                        height: "220px",
+                        background: "linear-gradient(135deg, var(--accent-color), var(--accent-dark))",
+                        color: "#fff",
+                        fontSize: "60px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {member.initials}
+                    </div>
+                  </div>
+                  <div className="member-info">
+                    <h4>{member.name}</h4>
+                    <span>{member.role}</span>
+                    <div className="member-contact">
+                      {member.phone && (
+                        <a href={`tel:${member.phone.replace(/\s+/g, "")}`}>
+                          <i className="bi bi-telephone-fill"></i> {member.phone}
+                        </a>
+                      )}
+                      {member.email && (
+                        <a href={`mailto:${member.email}`}>
+                          <i className="bi bi-envelope-fill"></i> {member.email}
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Wider Team Section (from CMS, if populated) */}
       {!isLoading && team.length > 0 && (
         <section id="team" className="doctors section light-background">
           <div className="container section-title" data-aos="fade-up">

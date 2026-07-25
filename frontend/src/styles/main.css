@@ -2859,3 +2859,218 @@ section,
   color: var(--default-color);
   opacity: 0.85;
 }
+
+/*--------------------------------------------------------------
+# NEW: About Page - Problem/Solution Cards (replaces plain numbered values)
+--------------------------------------------------------------*/
+.problem-solution-item {
+  background-color: var(--surface-color);
+  box-shadow: 0 4px 20px var(--shadow-color);
+  border-radius: 12px;
+  padding: 32px 28px;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.problem-solution-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px var(--shadow-color);
+}
+
+.problem-solution-item .ps-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--gray-light);
+  color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 18px;
+}
+
+.problem-solution-item .ps-problem {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--default-color);
+  opacity: 0.55;
+  margin-bottom: 6px;
+}
+
+.problem-solution-item h3 {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--heading-color);
+  margin-bottom: 10px;
+}
+
+.problem-solution-item p {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--default-color);
+  opacity: 0.85;
+  margin-bottom: 0;
+}
+
+/*--------------------------------------------------------------
+# NEW: Team Card - Contact Links (phone/email under role)
+--------------------------------------------------------------*/
+.team-member .member-contact {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--gray-mid);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.team-member .member-contact a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--default-color);
+  opacity: 0.8;
+  transition: all 0.25s ease;
+}
+
+.team-member .member-contact a:hover {
+  color: var(--accent-color);
+  opacity: 1;
+}
+
+.team-member .member-contact i {
+  color: var(--accent-color);
+  font-size: 14px;
+}
+
+/*--------------------------------------------------------------
+# NEW: About Page - Company History / Timeline Section
+--------------------------------------------------------------*/
+.history-section .history-intro {
+  max-width: 720px;
+  margin: 0 auto 50px;
+  text-align: center;
+}
+
+.history-timeline {
+  position: relative;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.history-timeline::before {
+  content: "";
+  position: absolute;
+  left: 24px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--gray-mid);
+}
+
+@media (min-width: 768px) {
+  .history-timeline::before {
+    left: 50%;
+    transform: translateX(-1px);
+  }
+}
+
+.history-item {
+  position: relative;
+  padding: 0 0 40px 60px;
+}
+
+@media (min-width: 768px) {
+  .history-item {
+    width: 50%;
+    padding: 0 0 50px 0;
+  }
+  .history-item:nth-child(odd) {
+    padding-right: 50px;
+    text-align: right;
+    margin-right: 50%;
+  }
+  .history-item:nth-child(even) {
+    padding-left: 50px;
+    margin-left: 50%;
+  }
+}
+
+.history-item .history-dot {
+  position: absolute;
+  left: 16px;
+  top: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  border: 3px solid var(--surface-color);
+  box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+@media (min-width: 768px) {
+  .history-item:nth-child(odd) .history-dot {
+    left: auto;
+    right: -9px;
+  }
+  .history-item:nth-child(even) .history-dot {
+    left: -9px;
+  }
+}
+
+.history-item .history-year {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.history-item h4 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--heading-color);
+  margin-bottom: 6px;
+}
+
+.history-item p {
+  font-size: 14px;
+  color: var(--default-color);
+  opacity: 0.8;
+  margin-bottom: 0;
+}
+
+.history-offer-card {
+  background-color: var(--surface-color);
+  box-shadow: 0 4px 20px var(--shadow-color);
+  border-radius: 12px;
+  padding: 26px 22px;
+  height: 100%;
+  text-align: center;
+}
+
+.history-offer-card i {
+  font-size: 30px;
+  color: var(--accent-color);
+  margin-bottom: 14px;
+  display: block;
+}
+
+.history-offer-card h4 {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--heading-color);
+  margin-bottom: 8px;
+}
+
+.history-offer-card p {
+  font-size: 13.5px;
+  color: var(--default-color);
+  opacity: 0.8;
+  margin-bottom: 0;
+}
