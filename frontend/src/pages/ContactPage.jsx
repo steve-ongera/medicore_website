@@ -108,10 +108,7 @@ const ContactPage = () => {
         </nav>
       </div>
 
-      {/* Contact Section — the embedded Google Map never actually
-          rendered anything useful (placeholder pin, no real address),
-          so it's dropped in favor of a clean 3-column info bar above
-          a centered form. */}
+      {/* Contact Section */}
       <section id="contact" className="contact section">
         <div className="container section-title" data-aos="fade-up">
           <h2>Contact</h2>
@@ -146,10 +143,22 @@ const ContactPage = () => {
             </div>
           </div>
 
-          {/* Form */}
-          <div className="row justify-content-center">
-            <div className="col-lg-8">
-              <form onSubmit={handleSubmit} className="php-email-form" data-aos="fade-up" data-aos-delay="200">
+          {/* Map + Form, side by side */}
+          <div className="row gy-4">
+            <div className="col-lg-6" data-aos="fade-up" data-aos-delay="150">
+              <div className="contact-map-wrap">
+                <iframe
+                  src="https://www.google.com/maps?q=hospitals+in+Kenya&output=embed"
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Medicore HMIS coverage across Kenya"
+                ></iframe>
+              </div>
+            </div>
+
+            <div className="col-lg-6">
+              <form onSubmit={handleSubmit} className="php-email-form h-100" data-aos="fade-up" data-aos-delay="200">
                 <div className="row gy-4">
                   <div className="col-md-6">
                     <input
