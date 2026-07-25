@@ -135,8 +135,8 @@ function BackToTopButton({ isTallPage }) {
           right: 2rem;
           width: 48px;
           height: 48px;
-          background: var(--color-primary, #0B1C36);
-          color: var(--color-accent, #C8A45A);
+          background: var(--accent-color, #3fbbc0);
+          color: var(--contrast-color, #ffffff);
           border: none;
           border-radius: 50%;
           cursor: pointer;
@@ -148,15 +148,14 @@ function BackToTopButton({ isTallPage }) {
           visibility: hidden;
           transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
           z-index: 1000;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 4px 12px var(--shadow-color, rgba(0, 0, 0, 0.08));
           backdrop-filter: blur(4px);
         }
         .mc-back-to-top.visible { opacity: 1; visibility: visible; }
         .mc-back-to-top:hover {
-          background: var(--color-accent, #C8A45A);
-          color: var(--color-primary, #0B1C36);
+          background: var(--accent-dark, #2ea6ab);
           transform: translateY(-3px);
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 6px 20px var(--shadow-color, rgba(0, 0, 0, 0.08));
         }
         .mc-back-to-top:active { transform: translateY(0); }
 
@@ -168,7 +167,7 @@ function BackToTopButton({ isTallPage }) {
           width: 0;
           height: 0;
           border-radius: 50%;
-          background: rgba(200, 164, 90, 0.3);
+          background: rgba(255, 255, 255, 0.25);
           transform: translate(-50%, -50%);
           transition: width 0.4s, height 0.4s;
         }
