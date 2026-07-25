@@ -11,7 +11,7 @@ import aboutImg from "../assets/img/about.jpg";
 import ctaBg from "../assets/img/cta-bg.webp";
 import dashboardImg from "../assets/img/dashboard-preview.jpg";
 
-// HMIS product screenshots for the "ward by ward" gallery below.
+// HMIS product screenshots for the "ward by ward" carousel below.
 // Add real screenshots at these paths (or point these imports at your
 // own files) — dashboardImg above is reused as the first/hero shot.
 import screenshotPatients from "../assets/img/screenshots/patient-records.png";
@@ -136,7 +136,7 @@ const TESTIMONIALS = [
   },
 ];
 
-// --- Product screenshots for the clickable gallery / lightbox ---
+// --- Product screenshots for the single-image carousel / lightbox ---
 const SCREENSHOTS = [
   {
     src: dashboardImg,
@@ -315,7 +315,11 @@ function initialsOf(name) {
 
 export default function HomePage() {
   const [settings, setSettings] = useState(null);
-  const [lightboxIndex, setLightboxIndex] = useState(null);
+
+  // Single index drives both the inline carousel and the lightbox —
+  // whichever screenshot is "active" is what both show.
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -386,18 +390,23 @@ export default function HomePage() {
     });
   }, []);
 
-  // --- Lightbox controls for the screenshot gallery ---
-  const openLightbox = (index) => setLightboxIndex(index);
-  const closeLightbox = () => setLightboxIndex(null);
+  // --- Carousel / lightbox controls ---
+  // nextScreenshot/prevScreenshot move the shared active index, so they
+  // work identically whether called from the inline carousel arrows or
+  // from the lightbox modal's arrows/keyboard.
   const nextScreenshot = () =>
-    setLightboxIndex((i) => (i === null ? null : (i + 1) % SCREENSHOTS.length));
+    setActiveIndex((i) => (i + 1) % SCREENSHOTS.length);
   const prevScreenshot = () =>
-    setLightboxIndex((i) =>
-      i === null ? null : (i - 1 + SCREENSHOTS.length) % SCREENSHOTS.length
-    );
+    setActiveIndex((i) => (i - 1 + SCREENSHOTS.length) % SCREENSHOTS.length);
+
+  const openLightbox = (index) => {
+    setActiveIndex(index);
+    setLightboxOpen(true);
+  };
+  const closeLightbox = () => setLightboxOpen(false);
 
   useEffect(() => {
-    if (lightboxIndex === null) return undefined;
+    if (!lightboxOpen) return undefined;
 
     const handleKeyDown = (e) => {
       if (e.key === "Escape") closeLightbox();
@@ -413,7 +422,7 @@ export default function HomePage() {
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = previousOverflow;
     };
-  }, [lightboxIndex]);
+  }, [lightboxOpen]);
 
   const heroData = {
     headline: settings?.hero_headline || "Hospital Management, Simplified for Kenya",
@@ -423,6 +432,8 @@ export default function HomePage() {
     supportPhone: settings?.support_phone || "+254 700 000000",
     supportEmail: settings?.support_email || "support@medicorehmis.co.ke",
   };
+
+  const activeShot = SCREENSHOTS[activeIndex];
 
   return (
     <>
@@ -519,27 +530,61 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Product showcase — clickable screenshot gallery, pops out into a lightbox */}
+      {/* Product showcase — single-image carousel with prev/next arrows.
+          Click the image to zoom into the full lightbox. */}
       <section id="product-preview" className="features section">
         <div className="container">
           <div className="row gy-4 align-items-center">
             <div className="col-lg-6">
-              <div className="screenshot-gallery">
-                {SCREENSHOTS.map((shot, index) => (
-                  <button
-                    type="button"
-                    key={shot.caption}
-                    className="screenshot-thumb"
-                    onClick={() => openLightbox(index)}
-                    aria-label={`View ${shot.caption} full size`}
-                  >
-                    <img src={shot.src} alt={shot.alt} loading="lazy" />
-                    <span className="screenshot-overlay">
-                      <i className="bi bi-zoom-in"></i>
-                      <span>{shot.caption}</span>
+              <div className="screenshot-carousel">
+                <button
+                  type="button"
+                  className="carousel-nav carousel-nav-prev"
+                  onClick={prevScreenshot}
+                  aria-label="Previous screenshot"
+                >
+                  <i className="bi bi-chevron-left"></i>
+                </button>
+
+                <button
+                  type="button"
+                  className="carousel-main"
+                  onClick={() => openLightbox(activeIndex)}
+                  aria-label={`View ${activeShot.caption} full size`}
+                >
+                  <img src={activeShot.src} alt={activeShot.alt} loading="lazy" />
+                  <span className="carousel-zoom-hint">
+                    <i className="bi bi-zoom-in"></i>
+                  </span>
+                  <span className="carousel-caption">
+                    {activeShot.caption}
+                    <span className="carousel-counter">
+                      {activeIndex + 1} / {SCREENSHOTS.length}
                     </span>
-                  </button>
-                ))}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  className="carousel-nav carousel-nav-next"
+                  onClick={nextScreenshot}
+                  aria-label="Next screenshot"
+                >
+                  <i className="bi bi-chevron-right"></i>
+                </button>
+
+                <div className="carousel-dots">
+                  {SCREENSHOTS.map((shot, index) => (
+                    <button
+                      type="button"
+                      key={shot.caption}
+                      className={`carousel-dot${index === activeIndex ? " active" : ""}`}
+                      onClick={() => setActiveIndex(index)}
+                      aria-label={`Go to ${shot.caption}`}
+                      aria-current={index === activeIndex}
+                    ></button>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="col-lg-6">
@@ -547,11 +592,11 @@ export default function HomePage() {
               <p>
                 Administrators get a live view of occupancy, admissions and
                 billing status — no more chasing department heads for
-                end-of-day reports. Click any screenshot to view it full
-                size and step through the rest.
+                end-of-day reports. Use the arrows to step through the
+                product, or click the image to view it full size.
               </p>
               <div className="icon-box">
-                <i className="bi bi-graph-up-arrow"></i>
+                
                 <div>
                   <h4>
                     <span>Real-time reporting</span>
@@ -560,7 +605,7 @@ export default function HomePage() {
                 </div>
               </div>
               <div className="icon-box">
-                <i className="bi bi-shield-check"></i>
+               
                 <div>
                   <h4>
                     <span>Data you can trust</span>
@@ -698,8 +743,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Screenshot lightbox — click a thumbnail above to open, arrows/keys to move */}
-      {lightboxIndex !== null && (
+      {/* Screenshot lightbox — click the carousel image to open, arrows/keys to move */}
+      {lightboxOpen && (
         <div
           className="screenshot-lightbox"
           onClick={closeLightbox}
@@ -729,14 +774,11 @@ export default function HomePage() {
           </button>
 
           <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={SCREENSHOTS[lightboxIndex].src}
-              alt={SCREENSHOTS[lightboxIndex].alt}
-            />
+            <img src={activeShot.src} alt={activeShot.alt} />
             <p className="lightbox-caption">
-              {SCREENSHOTS[lightboxIndex].caption}
+              {activeShot.caption}
               <span>
-                {lightboxIndex + 1} / {SCREENSHOTS.length}
+                {activeIndex + 1} / {SCREENSHOTS.length}
               </span>
             </p>
           </div>
