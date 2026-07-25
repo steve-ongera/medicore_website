@@ -6,8 +6,8 @@ const NAV_LINKS = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   { to: "/services", label: "Services" },
-  { to: "/departments", label: "Departments" },
-  { to: "/doctors", label: "Doctors" },
+  { to: "/sha-etims", label: "SHA & eTIMS" }, // Replaced "Departments"
+  { to: "/case-studies", label: "Case Studies" }, // Replaced "Doctors"
   { to: "/contact", label: "Contact" },
 ];
 

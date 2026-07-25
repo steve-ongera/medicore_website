@@ -197,12 +197,7 @@ export default function AboutPage() {
             <div className="col-lg-6 content" data-aos="fade-up" data-aos-delay="200">
               <h2 style={{ marginBottom: "16px" }}>Built for Kenyan Healthcare</h2>
               <p>
-                Medicore HMIS started with one question from a Nairobi clinic
-                administrator: why does compliance software make our job
-                harder, not easier? Every module since has been built to
-                answer that — not adapted from a foreign template, but
-                designed around SHA, eTIMS and the way Kenyan facilities
-                actually operate day to day.
+                Medicore HMIS began with a simple question: why should compliance make healthcare harder? Built for Kenyan facilities, it is designed around SHA, eTIMS, and real hospital workflows.
               </p>
 
               <blockquote style={styles.pullQuote}>

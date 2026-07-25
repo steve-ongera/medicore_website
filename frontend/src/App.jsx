@@ -4,8 +4,8 @@ import Footer from "./components/Footer.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import AboutPage from "./pages/AboutPage.jsx";
 import ServicesPage from "./pages/ServicesPage.jsx";
-import DepartmentsPage from "./pages/DepartmentsPage.jsx";
-import DoctorsPage from "./pages/DoctorsPage.jsx";
+import ShaEtimsPage from "./pages/ShaEtimsPage.jsx"; // New - replaced DepartmentsPage
+import CaseStudiesPage from "./pages/CaseStudiesPage.jsx"; // New - replaced DoctorsPage
 import PackagesPage from "./pages/PackagesPage.jsx";
 import PackageDetailPage from "./pages/PackageDetailPage.jsx";
 import PricingPage from "./pages/PricingPage.jsx";
@@ -23,8 +23,8 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/services" element={<ServicesPage />} />
-          <Route path="/departments" element={<DepartmentsPage />} />
-          <Route path="/doctors" element={<DoctorsPage />} />
+          <Route path="/sha-etims" element={<ShaEtimsPage />} /> {/* New route */}
+          <Route path="/case-studies" element={<CaseStudiesPage />} /> {/* New route */}
           <Route path="/packages" element={<PackagesPage />} />
           <Route path="/packages/:slug" element={<PackageDetailPage />} />
           <Route path="/pricing" element={<PricingPage />} />
