@@ -2821,3 +2821,41 @@ section,
     font-size: 17px;
   }
 }
+
+/*--------------------------------------------------------------
+# NEW: SHA/eTIMS Page - Compliance Callout (replaces border-left box)
+--------------------------------------------------------------*/
+.compliance-callout {
+  background-color: var(--surface-color);
+  box-shadow: 0 4px 20px var(--shadow-color);
+  border-radius: 12px;
+  padding: 50px 40px;
+  text-align: center;
+}
+
+.compliance-callout .callout-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--gray-light);
+  color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 20px;
+}
+
+.compliance-callout h3 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--heading-color);
+  margin-bottom: 14px;
+}
+
+.compliance-callout p {
+  max-width: 640px;
+  margin: 0 auto 24px;
+  color: var(--default-color);
+  opacity: 0.85;
+}
