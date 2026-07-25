@@ -1494,7 +1494,8 @@ section,
 }
 
 /*--------------------------------------------------------------
-# Testimonials Section
+# Testimonials Section (legacy swiper-based styles kept intact
+# in case other pages / components still reference them)
 --------------------------------------------------------------*/
 .testimonials .testimonial-item {
   box-sizing: content-box;
@@ -2070,4 +2071,431 @@ section,
   font-size: 18px;
   margin-right: 10px;
   color: var(--accent-color);
+}
+
+/*--------------------------------------------------------------
+# NEW: Testimonials Marquee (homepage)
+# Pure CSS continuous strip, no JS/Swiper dependency. Pauses on
+# hover/focus and respects prefers-reduced-motion.
+--------------------------------------------------------------*/
+.testimonials-marquee .marquee-wrapper {
+  overflow: hidden;
+  position: relative;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.testimonials-marquee .marquee-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  padding: 6px 4px 20px;
+  animation: marqueeScroll 50s linear infinite;
+}
+
+.testimonials-marquee .marquee-wrapper:hover .marquee-track,
+.testimonials-marquee .marquee-wrapper:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    /* Track is the 8 testimonials duplicated once, so -50% is exactly
+       one full set — the loop point is seamless. */
+    transform: translateX(-50%);
+  }
+}
+
+.testimonials-marquee .testimonial-card {
+  flex: 0 0 320px;
+  background-color: var(--surface-color);
+  box-shadow: 0 4px 20px var(--shadow-color);
+  border-radius: 12px;
+  padding: 30px 26px;
+  display: flex;
+  flex-direction: column;
+}
+
+.testimonials-marquee .quote-icon {
+  color: var(--accent-color);
+  opacity: 0.35;
+  font-size: 30px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.testimonials-marquee .testimonial-quote {
+  font-style: italic;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--default-color);
+  flex-grow: 1;
+  margin-bottom: 16px;
+}
+
+.testimonials-marquee .testimonial-rating {
+  margin-bottom: 16px;
+}
+
+.testimonials-marquee .testimonial-rating i {
+  color: var(--accent-color);
+  font-size: 14px;
+  margin-right: 2px;
+}
+
+.testimonials-marquee .testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--gray-mid);
+}
+
+.testimonials-marquee .avatar-initials {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
+  color: var(--contrast-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--heading-font);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.testimonials-marquee .testimonial-author h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--heading-color);
+}
+
+.testimonials-marquee .testimonial-author span {
+  font-size: 12.5px;
+  color: var(--default-color);
+  opacity: 0.7;
+}
+
+@media (max-width: 576px) {
+  .testimonials-marquee .testimonial-card {
+    flex: 0 0 260px;
+    padding: 24px 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .testimonials-marquee .marquee-track {
+    animation: none !important;
+  }
+  .testimonials-marquee .marquee-wrapper {
+    overflow-x: auto;
+  }
+}
+
+/*--------------------------------------------------------------
+# NEW: Pricing Section small additions (homepage packages)
+# Layered on top of the existing .pricing rules above — nothing
+# above this block was changed.
+--------------------------------------------------------------*/
+.pricing .pricing-subtitle {
+  font-size: 13px;
+  color: var(--default-color);
+  opacity: 0.65;
+  margin-bottom: 18px;
+}
+
+.pricing .pricing-item h4 {
+  margin-bottom: 4px;
+}
+
+.pricing .pricing-sla {
+  font-size: 13px;
+  color: var(--default-color);
+  opacity: 0.7;
+  margin-bottom: 6px;
+}
+
+.pricing .pricing-modules-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--accent-color);
+  margin: 14px 0 4px;
+  text-align: left;
+  padding-left: 4px;
+}
+
+.pricing .pricing-item ul {
+  text-align: left;
+}
+
+.pricing .pricing-item ul li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+}
+
+.pricing .pricing-item ul i {
+  padding-right: 0;
+  font-size: 15px;
+}
+
+/*--------------------------------------------------------------
+# UPDATE: Pricing module list capped to the Essential/first card's
+# height, with an internal scrollbar for the longer tiers. Button
+# stays pinned to the bottom of every card regardless of scroll.
+--------------------------------------------------------------*/
+.pricing .pricing-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.pricing .pricing-modules-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pricing .pricing-scroll-hint {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--default-color);
+  opacity: 0.5;
+  white-space: nowrap;
+}
+
+.pricing .pricing-item ul {
+  flex: 1 1 auto;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-color) var(--gray-light);
+}
+
+.pricing .pricing-item ul::-webkit-scrollbar {
+  width: 6px;
+}
+
+.pricing .pricing-item ul::-webkit-scrollbar-track {
+  background: var(--gray-light);
+  border-radius: 10px;
+}
+
+.pricing .pricing-item ul::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 10px;
+}
+
+.pricing .btn-wrap {
+  margin-top: auto;
+}
+
+/*--------------------------------------------------------------
+# NEW: HMIS Screenshot Gallery + Lightbox (product preview section)
+# Pure React/CSS — no external lightbox library required.
+--------------------------------------------------------------*/
+.screenshot-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.screenshot-thumb {
+  position: relative;
+  border: none;
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 4 / 3;
+  background: var(--gray-light);
+}
+
+.screenshot-thumb:first-child {
+  grid-column: span 2;
+  aspect-ratio: 16 / 9;
+}
+
+.screenshot-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.screenshot-thumb:hover img {
+  transform: scale(1.08);
+}
+
+.screenshot-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.75) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  color: #ffffff;
+  text-align: center;
+}
+
+.screenshot-thumb:hover .screenshot-overlay,
+.screenshot-thumb:focus-visible .screenshot-overlay {
+  opacity: 1;
+}
+
+.screenshot-overlay i {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.screenshot-overlay span:last-child {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--heading-font);
+}
+
+.screenshot-thumb:focus-visible {
+  outline: 3px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+@media (max-width: 576px) {
+  .screenshot-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .screenshot-thumb:first-child {
+    grid-column: span 1;
+  }
+}
+
+/* Lightbox overlay */
+.screenshot-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.92);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: lightboxFadeIn 0.25s ease;
+  padding: 20px;
+}
+
+@keyframes lightboxFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.screenshot-lightbox .lightbox-content {
+  max-width: min(900px, 90vw);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.screenshot-lightbox img {
+  max-width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.screenshot-lightbox .lightbox-caption {
+  color: #ffffff;
+  margin-top: 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.screenshot-lightbox .lightbox-caption span {
+  opacity: 0.6;
+  font-size: 12px;
+}
+
+.screenshot-lightbox .lightbox-close,
+.screenshot-lightbox .lightbox-nav {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.screenshot-lightbox .lightbox-close:hover,
+.screenshot-lightbox .lightbox-nav:hover {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.screenshot-lightbox .lightbox-close {
+  top: 24px;
+  right: 24px;
+}
+
+.screenshot-lightbox .lightbox-prev {
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.screenshot-lightbox .lightbox-next {
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@media (max-width: 576px) {
+  .screenshot-lightbox .lightbox-close,
+  .screenshot-lightbox .lightbox-nav {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .screenshot-lightbox .lightbox-prev {
+    left: 10px;
+  }
+
+  .screenshot-lightbox .lightbox-next {
+    right: 10px;
+  }
+
+  .screenshot-lightbox .lightbox-close {
+    top: 10px;
+    right: 10px;
+  }
 }
