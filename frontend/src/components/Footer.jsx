@@ -91,7 +91,7 @@ export default function Footer() {
             {/* Developer credit — sits directly below the Useful Links / Services
                 columns, still inside the footer-top grid, above the copyright bar */}
             <div
-              className="footer-developer mt-4 pt-3"
+              className="footer-developer mt-2 pt-2"
               style={{
                 borderTop: '1px solid var(--gray-mid)',
                 fontSize: '13px',
@@ -115,7 +115,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="container copyright text-center mt-4">
+      <div className="container copyright text-center mt-2">
         <p>
           © <span>{year}</span> <strong className="px-1 sitename">Medicore HMIS</strong> 
           <span> - All Rights Reserved</span>
