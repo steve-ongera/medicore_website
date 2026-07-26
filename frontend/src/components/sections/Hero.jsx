@@ -7,24 +7,31 @@ import hero2 from '../../assets/img/hero-carousel/hero-carousel-2.jpg';
 import hero3 from '../../assets/img/hero-carousel/hero-carousel-3.jpg';
 
 const Hero = ({ settings }) => {
+  // NOTE: every title is 4 words and every description is 21 words,
+  // matching the reference slide ("Streamline Your Healthcare Operations")
+  // so the three slides read as a uniform set.
   const slides = [
     {
       id: 1,
       image: hero1,
       title: settings?.headline || "Welcome to Medicore HMIS",
-      description: settings?.subtext || "Hospital Management, Simplified for Kenya. SHA-ready, eTIMS-compliant HMIS software for clinics, nursing homes and hospitals across Kenya."
+      description:
+        settings?.subtext ||
+        "Hospital management made simple for clinics, nursing homes and hospitals across Kenya, fully SHA-ready and eTIMS-compliant for every modern healthcare facility."
     },
     {
       id: 2,
       image: hero2,
       title: "Streamline Your Healthcare Operations",
-      description: "From outpatient to bed management, our comprehensive HMIS solution helps you deliver better patient care while staying compliant with Kenyan regulations."
+      description:
+        "From outpatient to bed management, our comprehensive HMIS solution helps you deliver better patient care while staying compliant with Kenyan regulations."
     },
     {
       id: 3,
       image: hero3,
-      title: "Ready for SHA & eTIMS Integration",
-      description: "Direct claims submission to Social Health Authority and KRA-compliant electronic tax invoicing on every bill. Stay ahead with Medicore HMIS."
+      title: "SHA and eTIMS Integration",
+      description:
+        "Submit claims directly to the Social Health Authority and generate KRA-compliant electronic tax invoices automatically on every bill you create today."
     }
   ];
 
@@ -93,17 +100,23 @@ const Hero = ({ settings }) => {
           <span className="visually-hidden">Next</span>
         </a>
 
-        <ol className="carousel-indicators">
+        {/* Indicators: Bootstrap 5 markup uses <button>, not <li>.
+            Using <li> inside an <ol> with no matching CSS rule left the
+            browser's default decimal list styling in place, which is why
+            "1 2 3" was showing up over the hero. */}
+        <div className="carousel-indicators">
           {slides.map((_, index) => (
-            <li
+            <button
               key={index}
+              type="button"
               data-bs-target="#hero-carousel"
               data-bs-slide-to={index}
               className={index === 0 ? 'active' : ''}
+              aria-current={index === 0 ? 'true' : undefined}
               aria-label={`Slide ${index + 1}`}
-            ></li>
+            ></button>
           ))}
-        </ol>
+        </div>
       </div>
     </section>
   );
