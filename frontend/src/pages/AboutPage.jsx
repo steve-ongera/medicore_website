@@ -61,11 +61,12 @@ const CORE_TEAM = [
   },
 ];
 
+// Updated stats with Bootstrap icons
 const PROOF_STATS = [
-  { icon: "fas fa-hospital", value: "40+", label: "Facilities running on Medicore" },
-  { icon: "fas fa-file-shield", value: "100%", label: "SHA & eTIMS compliant claims" },
-  { icon: "fas fa-headset", value: "Nairobi", label: "Based local support team" },
-  { icon: "fas fa-clock", value: "24/7", label: "System uptime monitoring" },
+  { icon: "bi bi-building", value: "40+", label: "Facilities running on Medicore" },
+  { icon: "bi bi-shield-check", value: "100%", label: "SHA & eTIMS compliant claims" },
+  { icon: "bi bi-geo-alt", value: "Nairobi", label: "Based local support team" },
+  { icon: "bi bi-clock", value: "24/7", label: "System uptime monitoring" },
 ];
 
 // TODO: replace with your real founding story, milestones, and dates.
@@ -308,7 +309,7 @@ export default function AboutPage() {
             {PROOF_STATS.map((stat) => (
               <div className="col-lg-3 col-md-6" key={stat.label} data-aos="fade-up">
                 <div className="stats-item d-flex align-items-center w-100 h-100">
-                  <i className={stat.icon}></i>
+                  <i className={`${stat.icon} stats-icon`}></i>
                   <div>
                     <span>{stat.value}</span>
                     <p>{stat.label}</p>
@@ -409,11 +410,11 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Leadership / Contact Team */}
+      {/* Professional Team Section */}
       <section id="core-team" className="doctors section">
         <div className="container section-title" data-aos="fade-up">
-          <h2>Talk to the Team</h2>
-          <p>Reach out directly to the people running Medicore day to day</p>
+          <h2>Meet the Team</h2>
+          <p>Dedicated professionals committed to transforming healthcare in Kenya</p>
         </div>
 
         <div className="container">
@@ -425,33 +426,31 @@ export default function AboutPage() {
                 data-aos="fade-up"
                 data-aos-delay={100 + index * 100}
               >
-                <div className="team-member">
-                  <div className="member-img">
-                    <div
-                      className="img-fluid d-flex align-items-center justify-content-center"
-                      style={{
-                        height: "220px",
-                        background: "linear-gradient(135deg, var(--accent-color), var(--accent-dark))",
-                        color: "#fff",
-                        fontSize: "60px",
-                        fontWeight: "bold",
-                      }}
-                    >
+                <div className="team-member professional-card">
+                  <div className="member-img professional-avatar">
+                    <div className="avatar-circle">
                       {member.initials}
                     </div>
+                    <div className="member-status">
+                      <span className="status-dot active"></span>
+                      Available
+                    </div>
                   </div>
-                  <div className="member-info">
+                  <div className="member-info professional-info">
                     <h4>{member.name}</h4>
-                    <span>{member.role}</span>
-                    <div className="member-contact">
+                    <span className="member-role">{member.role}</span>
+                    <div className="member-divider"></div>
+                    <div className="member-contact professional-contact">
                       {member.phone && (
-                        <a href={`tel:${member.phone.replace(/\s+/g, "")}`}>
-                          <i className="bi bi-telephone-fill"></i> {member.phone}
+                        <a href={`tel:${member.phone.replace(/\s+/g, "")}`} className="contact-link">
+                          <i className="bi bi-telephone-fill"></i>
+                          <span>{member.phone}</span>
                         </a>
                       )}
                       {member.email && (
-                        <a href={`mailto:${member.email}`}>
-                          <i className="bi bi-envelope-fill"></i> {member.email}
+                        <a href={`mailto:${member.email}`} className="contact-link">
+                          <i className="bi bi-envelope-fill"></i>
+                          <span>{member.email}</span>
                         </a>
                       )}
                     </div>
@@ -483,8 +482,8 @@ export default function AboutPage() {
                   data-aos="fade-up"
                   data-aos-delay={100 + index * 100}
                 >
-                  <div className="team-member">
-                    <div className="member-img">
+                  <div className="team-member professional-card">
+                    <div className="member-img professional-avatar">
                       {member.photo ? (
                         <img
                           src={member.photo}
@@ -494,36 +493,34 @@ export default function AboutPage() {
                           style={{ width: "100%", height: "300px", objectFit: "cover" }}
                         />
                       ) : (
-                        <div
-                          className="img-fluid d-flex align-items-center justify-content-center"
-                          style={{
-                            height: "300px",
-                            background: "linear-gradient(135deg, var(--accent-color), var(--accent-dark))",
-                            color: "white",
-                            fontSize: "80px",
-                            fontWeight: "bold",
-                          }}
-                        >
+                        <div className="avatar-circle large">
                           {member.name?.charAt(0)}
                         </div>
                       )}
-                      <div className="social">
+                      {member.photo && (
+                        <div className="member-status">
+                          <span className="status-dot active"></span>
+                          Active
+                        </div>
+                      )}
+                    </div>
+                    <div className="member-info professional-info">
+                      <h4>{member.name}</h4>
+                      <span className="member-role">{member.role}</span>
+                      {member.bio && <p className="member-bio">{member.bio}</p>}
+                      <div className="member-divider"></div>
+                      <div className="social professional-social">
                         {member.linkedin_url && (
-                          <a href={member.linkedin_url} target="_blank" rel="noopener noreferrer">
+                          <a href={member.linkedin_url} target="_blank" rel="noopener noreferrer" className="social-link">
                             <i className="bi bi-linkedin"></i>
                           </a>
                         )}
                         {member.twitter_url && (
-                          <a href={member.twitter_url} target="_blank" rel="noopener noreferrer">
+                          <a href={member.twitter_url} target="_blank" rel="noopener noreferrer" className="social-link">
                             <i className="bi bi-twitter-x"></i>
                           </a>
                         )}
                       </div>
-                    </div>
-                    <div className="member-info">
-                      <h4>{member.name}</h4>
-                      <span>{member.role}</span>
-                      {member.bio && <p className="mt-2 small">{member.bio}</p>}
                     </div>
                   </div>
                 </div>

@@ -62,10 +62,10 @@ const CORE_FEATURES = [
 ];
 
 const TRUST_STATS = [
-  { icon: "fas fa-hospital", value: "40+", label: "Facilities across Kenya" },
-  { icon: "fas fa-file-shield", value: "SHA & eTIMS", label: "Compliant by default" },
-  { icon: "fas fa-headset", value: "Local", label: "Nairobi-based support team" },
-  { icon: "fas fa-clock", value: "24/7", label: "System uptime monitoring" },
+  { icon: "bi bi-hospital", value: "40+", label: "Facilities across Kenya" },
+  { icon: "bi bi-shield-check", value: "SHA & eTIMS", label: "Compliant by default" },
+  { icon: "bi bi-headset", value: "Local", label: "Nairobi-based support team" },
+  { icon: "bi bi-clock", value: "24/7", label: "System uptime monitoring" },
 ];
 
 // --- Testimonials (moving marquee strip) ---
@@ -440,17 +440,19 @@ export default function HomePage() {
       {/* Hero Section — untouched, carousel-based */}
       <Hero settings={heroData} />
 
-      {/* Trust strip: quick proof points right under the fold */}
+      {/* Trust strip: quick proof points right under the fold - UPDATED WITH CLEAN CARDS */}
       <section id="trust-strip" className="stats section light-background">
         <div className="container">
           <div className="row gy-4">
             {TRUST_STATS.map((stat) => (
               <div className="col-lg-3 col-md-6" key={stat.label}>
-                <div className="stats-item d-flex align-items-center w-100 h-100">
-                  <i className={stat.icon}></i>
-                  <div>
-                    <span>{stat.value}</span>
-                    <p>{stat.label}</p>
+                <div className="stats-card">
+                  <div className="stats-card-icon">
+                    <i className={stat.icon}></i>
+                  </div>
+                  <div className="stats-card-content">
+                    <span className="stats-value">{stat.value}</span>
+                    <p className="stats-label">{stat.label}</p>
                   </div>
                 </div>
               </div>

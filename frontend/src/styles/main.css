@@ -1198,6 +1198,105 @@ section,
 }
 
 /*--------------------------------------------------------------
+# UPDATED: About Section Cards - Professional & Clean Design
+--------------------------------------------------------------*/
+.about .about-card {
+  background: var(--surface-color);
+  padding: 30px 25px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  transition: all 0.3s ease;
+  height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.about .about-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent-color), var(--accent-dark));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.about .about-card:hover::before {
+  opacity: 1;
+}
+
+.about .about-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(63, 187, 192, 0.12);
+  border-color: rgba(63, 187, 192, 0.1);
+}
+
+.about .about-card .card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #eef4ff, #e0eaff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  transition: all 0.3s ease;
+}
+
+.about .about-card:hover .card-icon {
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
+  transform: scale(1.05);
+}
+
+.about .about-card .card-icon i {
+  font-size: 28px;
+  color: var(--accent-color);
+  transition: all 0.3s ease;
+}
+
+.about .about-card:hover .card-icon i {
+  color: var(--contrast-color);
+}
+
+.about .about-card h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--heading-color);
+  margin-bottom: 12px;
+  letter-spacing: -0.3px;
+}
+
+.about .about-card p {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--default-color);
+  opacity: 0.8;
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .about .about-card {
+    padding: 25px 20px;
+  }
+  
+  .about .about-card .card-icon {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .about .about-card .card-icon i {
+    font-size: 24px;
+  }
+  
+  .about .about-card h4 {
+    font-size: 17px;
+  }
+}
+
+/*--------------------------------------------------------------
 # Stats Section
 --------------------------------------------------------------*/
 .stats .stats-item {
@@ -3073,4 +3172,325 @@ section,
   color: var(--default-color);
   opacity: 0.8;
   margin-bottom: 0;
+}
+
+/* Professional Team Section */
+.professional-card {
+  background: var(--surface-color);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+.professional-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+}
+
+.professional-avatar {
+  position: relative;
+  padding: 30px 20px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
+}
+
+.avatar-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: 3px solid rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+}
+
+.avatar-circle.large {
+  width: 100px;
+  height: 100px;
+  font-size: 40px;
+}
+
+.member-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 20px;
+  font-size: 12px;
+  color: white;
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.active {
+  background: #4ade80;
+}
+
+.professional-info {
+  padding: 20px 24px 24px;
+}
+
+.professional-info h4 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--heading-color);
+}
+
+.member-role {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.member-divider {
+  height: 2px;
+  width: 40px;
+  background: var(--accent-color);
+  margin: 12px 0 14px;
+  border-radius: 2px;
+}
+
+.member-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contact-link:hover {
+  color: var(--accent-color);
+}
+
+.contact-link i {
+  font-size: 14px;
+  color: var(--accent-color);
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.member-bio {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 8px 0 0;
+}
+
+.professional-social {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.social-link {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.social-link:hover {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: white;
+}
+
+/* Stats Icons */
+.stats-icon {
+  font-size: 32px;
+  color: var(--accent-color);
+  margin-right: 16px;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.stats-item {
+  padding: 24px 20px;
+  background: var(--surface-color);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.stats-item:hover {
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+}
+
+.stats-item span {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--heading-color);
+  line-height: 1.2;
+}
+
+.stats-item p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .avatar-circle {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+  
+  .avatar-circle.large {
+    width: 80px;
+    height: 80px;
+    font-size: 32px;
+  }
+  
+  .stats-icon {
+    font-size: 24px;
+    margin-right: 12px;
+  }
+  
+  .stats-item span {
+    font-size: 22px;
+  }
+}
+
+/*--------------------------------------------------------------
+# UPDATED: Stats Section - Clean Professional Cards
+--------------------------------------------------------------*/
+.stats .stats-card {
+  background: var(--surface-color);
+  padding: 30px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  transition: all 0.3s ease;
+  height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats .stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stats .stats-card:hover::before {
+  opacity: 1;
+}
+
+.stats .stats-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(63, 187, 192, 0.12);
+ 
+}
+
+.stats .stats-card-icon {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #eef4ff, #e0eaff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.stats .stats-card:hover .stats-card-icon {
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
+  transform: scale(1.05);
+}
+
+.stats .stats-card-icon i {
+  font-size: 28px;
+  color: var(--accent-color);
+  transition: all 0.3s ease;
+}
+
+.stats .stats-card:hover .stats-card-icon i {
+  color: var(--contrast-color);
+}
+
+.stats .stats-card-content {
+  flex: 1;
+}
+
+.stats .stats-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--heading-color);
+  display: block;
+  line-height: 1.2;
+  margin-bottom: 4px;
+  letter-spacing: -0.5px;
+}
+
+.stats .stats-label {
+  font-size: 14px;
+  color: var(--default-color);
+  opacity: 0.7;
+  margin-bottom: 0;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .stats .stats-card {
+    padding: 20px;
+    gap: 15px;
+  }
+  
+  .stats .stats-card-icon {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .stats .stats-card-icon i {
+    font-size: 24px;
+  }
+  
+  .stats .stats-value {
+    font-size: 28px;
+  }
+  
+  .stats .stats-label {
+    font-size: 13px;
+  }
 }
