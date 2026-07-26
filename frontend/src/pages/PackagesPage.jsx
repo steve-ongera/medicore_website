@@ -34,6 +34,40 @@ function pick(obj, keys, fallback = "") {
   return fallback;
 }
 
+// Hardcoded FAQs as fallback
+const FALLBACK_FAQS = [
+  {
+    id: 1,
+    question: "What is Medicore HMIS?",
+    answer: "Medicore HMIS is a comprehensive hospital management information system designed specifically for Kenyan healthcare facilities. It helps clinics, nursing homes, and hospitals manage patient records, billing, SHA claims, eTIMS compliance, and more in one integrated platform."
+  },
+  {
+    id: 2,
+    question: "Is Medicore HMIS compliant with SHA and eTIMS?",
+    answer: "Yes! Medicore HMIS is fully compliant with both SHA (Social Health Authority) requirements and KRA eTIMS regulations. All packages include built-in compliance modules, so your facility stays up to date with regulatory changes."
+  },
+  {
+    id: 3,
+    question: "How long does it take to implement Medicore HMIS?",
+    answer: "Most facilities can be up and running within days, not months. Our team provides training and support to ensure a smooth transition. The timeline depends on your facility size and specific requirements."
+  },
+  {
+    id: 4,
+    question: "Can I integrate Medicore HMIS with M-Pesa?",
+    answer: "Absolutely! Medicore HMIS includes M-Pesa Paybill and STK Push integration, making it easy for patients to pay bills and for your facility to reconcile payments automatically."
+  },
+  {
+    id: 5,
+    question: "What happens if I need more beds or users?",
+    answer: "You can easily upgrade to a higher package as your facility grows. All packages are designed to scale with your needs, from small clinics to large referral hospitals."
+  },
+  {
+    id: 6,
+    question: "Do you offer training and support?",
+    answer: "Yes, we provide comprehensive training for your staff and ongoing support. Our team is based in Nairobi and understands the unique challenges of the Kenyan healthcare system."
+  }
+];
+
 export default function PackagesPage() {
   const [packages, setPackages] = useState([]);
   const [faqs, setFaqs] = useState([]);
@@ -54,9 +88,16 @@ export default function PackagesPage() {
         // Unwrap plain arrays, DRF pagination ({ results: [...] }),
         // or { data: [...] } — whichever shape the API sends back.
         const packagesArray = normalizeListResponse(packagesData);
-        const faqsArray = normalizeListResponse(faqsData);
+        let faqsArray = normalizeListResponse(faqsData);
+
+        // If no FAQs from API, use fallback hardcoded FAQs
+        if (faqsArray.length === 0) {
+          console.log('No FAQs from API, using fallback FAQs');
+          faqsArray = FALLBACK_FAQS;
+        }
 
         console.log('Packages array length:', packagesArray.length);
+        console.log('FAQs array length:', faqsArray.length);
 
         setPackages(packagesArray);
         setFaqs(faqsArray);
@@ -66,7 +107,8 @@ export default function PackagesPage() {
         if (isMounted) {
           setError(err.message);
           setPackages([]);
-          setFaqs([]);
+          // Use fallback FAQs on error
+          setFaqs(FALLBACK_FAQS);
         }
       })
       .finally(() => isMounted && setIsLoading(false));

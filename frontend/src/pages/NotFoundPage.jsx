@@ -43,7 +43,7 @@ export default function NotFoundPage() {
               </div>
 
               {/* Error Message */}
-              <h2 className="mb-3" style={{ fontSize: '32px', fontWeight: '700' }}>
+              <h2 className="mb-3" style={{ fontSize: '32px', fontWeight: '700', color: 'var(--heading-color)' }}>
                 This page isn't on the chart
               </h2>
               
@@ -53,46 +53,66 @@ export default function NotFoundPage() {
 
               {/* Action Buttons */}
               <div className="d-flex justify-content-center gap-3 flex-wrap">
-                <Link to="/" className="btn btn-buy" style={{ 
+                <Link to="/" className="btn-buy" style={{ 
                   background: 'var(--accent-color)',
                   color: 'var(--contrast-color)',
                   padding: '12px 40px',
-                  borderRadius: '4px',
+                  borderRadius: '30px',
                   textDecoration: 'none',
                   display: 'inline-block',
-                  transition: '0.3s'
+                  transition: 'all 0.3s ease',
+                  fontWeight: 600,
+                  boxShadow: '0 4px 15px rgba(63, 187, 192, 0.3)',
                 }}>
-                  <i className="bi bi-house me-2"></i>
+                  <i className="bi bi-house-fill me-2"></i>
                   Back to Home
                 </Link>
-                <Link to="/contact" className="btn btn-outline" style={{
+                <Link to="/contact" className="btn-outline" style={{
                   padding: '12px 40px',
-                  borderRadius: '4px',
+                  borderRadius: '30px',
                   border: '2px solid var(--accent-color)',
                   color: 'var(--accent-color)',
                   textDecoration: 'none',
                   display: 'inline-block',
-                  transition: '0.3s'
+                  transition: 'all 0.3s ease',
+                  fontWeight: 600,
                 }}>
-                  <i className="bi bi-envelope me-2"></i>
+                  <i className="bi bi-envelope-fill me-2"></i>
                   Contact Support
                 </Link>
               </div>
 
               {/* Helpful Links */}
-              <div className="mt-5 pt-4 border-top">
+              <div className="mt-5 pt-4 border-top" style={{ borderColor: 'var(--gray-mid) !important' }}>
                 <p className="mb-3" style={{ color: 'var(--default-color)' }}>
-                  <i className="bi bi-info-circle me-2"></i>
+                  <i className="bi bi-info-circle me-2" style={{ color: 'var(--accent-color)' }}></i>
                   You might find these pages helpful:
                 </p>
                 <div className="d-flex justify-content-center gap-3 flex-wrap">
-                  <Link to="/packages" style={{ color: 'var(--accent-color)' }}>Packages</Link>
-                  <span>|</span>
-                  <Link to="/services" style={{ color: 'var(--accent-color)' }}>Services</Link>
-                  <span>|</span>
-                  <Link to="/about" style={{ color: 'var(--accent-color)' }}>About Us</Link>
-                  <span>|</span>
-                  <Link to="/contact" style={{ color: 'var(--accent-color)' }}>Contact</Link>
+                  <Link to="/packages" style={{ color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 500 }}>
+                    <i className="bi bi-box-seam me-1"></i>
+                    Packages
+                  </Link>
+                  <span style={{ color: 'var(--gray-mid)' }}>|</span>
+                  <Link to="/services" style={{ color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 500 }}>
+                    <i className="bi bi-grid me-1"></i>
+                    Services
+                  </Link>
+                  <span style={{ color: 'var(--gray-mid)' }}>|</span>
+                  <Link to="/about" style={{ color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 500 }}>
+                    <i className="bi bi-people me-1"></i>
+                    About Us
+                  </Link>
+                  <span style={{ color: 'var(--gray-mid)' }}>|</span>
+                  <Link to="/contact" style={{ color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 500 }}>
+                    <i className="bi bi-envelope me-1"></i>
+                    Contact
+                  </Link>
+                  <span style={{ color: 'var(--gray-mid)' }}>|</span>
+                  <Link to="/case-studies" style={{ color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 500 }}>
+                    <i className="bi bi-file-earmark-text me-1"></i>
+                    Case Studies
+                  </Link>
                 </div>
               </div>
             </div>

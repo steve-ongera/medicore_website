@@ -107,7 +107,7 @@ export default function CaseStudiesPage() {
                     </div>
                     <h3>{study.title}</h3>
                     <p className="case-study-facility">
-                      <i className="bi bi-building"></i> {study.facility}
+                       {study.facility}
                     </p>
                     <p className="case-study-description">{study.description}</p>
                     <div className="case-study-results">
@@ -115,7 +115,7 @@ export default function CaseStudiesPage() {
                       <ul>
                         {study.results.map((result, idx) => (
                           <li key={idx}>
-                            <i className="bi bi-check-circle"></i>
+                            <i className="bi bi-check-circle-fill"></i>
                             {result}
                           </li>
                         ))}
@@ -153,43 +153,51 @@ export default function CaseStudiesPage() {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Stats Section - Updated with Bootstrap Icons and Professional Cards */}
       <section className="stats section">
         <div className="container">
           <div className="row gy-4">
             <div className="col-lg-3 col-md-6" data-aos="fade-up">
-              <div className="stats-item d-flex align-items-center w-100 h-100">
-                <i className="fas fa-chart-line"></i>
-                <div>
-                  <span>60%</span>
-                  <p>Average Efficiency Improvement</p>
+              <div className="stats-card">
+                <div className="stats-card-icon">
+                  <i className="bi bi-graph-up-arrow"></i>
+                </div>
+                <div className="stats-card-content">
+                  <span className="stats-value">60%</span>
+                  <p className="stats-label">Average Efficiency Improvement</p>
                 </div>
               </div>
             </div>
             <div className="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-              <div className="stats-item d-flex align-items-center w-100 h-100">
-                <i className="fas fa-file-invoice"></i>
-                <div>
-                  <span>95%</span>
-                  <p>Faster Claim Processing</p>
+              <div className="stats-card">
+                <div className="stats-card-icon">
+                  <i className="bi bi-file-check"></i>
+                </div>
+                <div className="stats-card-content">
+                  <span className="stats-value">95%</span>
+                  <p className="stats-label">Faster Claim Processing</p>
                 </div>
               </div>
             </div>
             <div className="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-              <div className="stats-item d-flex align-items-center w-100 h-100">
-                <i className="fas fa-smile"></i>
-                <div>
-                  <span>100%</span>
-                  <p>Client Satisfaction Rate</p>
+              <div className="stats-card">
+                <div className="stats-card-icon">
+                  <i className="bi bi-emoji-smile"></i>
+                </div>
+                <div className="stats-card-content">
+                  <span className="stats-value">100%</span>
+                  <p className="stats-label">Client Satisfaction Rate</p>
                 </div>
               </div>
             </div>
             <div className="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-              <div className="stats-item d-flex align-items-center w-100 h-100">
-                <i className="fas fa-undo"></i>
-                <div>
-                  <span>98%</span>
-                  <p>Reduction in Billing Errors</p>
+              <div className="stats-card">
+                <div className="stats-card-icon">
+                  <i className="bi bi-arrow-counterclockwise"></i>
+                </div>
+                <div className="stats-card-content">
+                  <span className="stats-value">98%</span>
+                  <p className="stats-label">Reduction in Billing Errors</p>
                 </div>
               </div>
             </div>
