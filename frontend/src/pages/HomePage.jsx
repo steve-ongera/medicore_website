@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getSiteSettings } from "../services/api.js";
+import { getSiteSettings, getPackages } from "../services/api.js";
 
 import Hero from "../components/sections/Hero.jsx";
 
@@ -170,139 +170,6 @@ const SCREENSHOTS = [
   },
 ];
 
-// --- Pricing packages (from MediCore Hospital Management Suite package sheet) ---
-const PACKAGES = [
-  {
-    name: "MediCore Essential",
-    subtitle: "Clinics & Small Outpatient Centres (0 Beds)",
-    setup: "50,000",
-    sla: "5,000",
-    modules: [
-      "Dashboard",
-      "Patient Registration",
-      "EMR Framework",
-      "Outpatient (OPD)",
-      "Billing & Cashier",
-      "Pharmacy",
-      "Laboratory",
-      "Appointments",
-      "Queue Management",
-      "Reports",
-      "User & Role Mgmt",
-      "Basic Inventory",
-    ],
-  },
-  {
-    name: "MediCore Professional",
-    subtitle: "Small Hospitals & Centres (20–30 Beds)",
-    setup: "150,000",
-    sla: "15,000",
-    modules: [
-      "Dashboard & Reports",
-      "Registration & EMR",
-      "Outpatient (OPD) Suite",
-      "Inpatient (IPD) Suite",
-      "Admissions & Discharge",
-      "Bed & Ward Mgmt",
-      "Nursing Notes",
-      "Billing & Cashier",
-      "Pharmacy & Laboratory",
-      "Radiology & Theatre",
-      "Appointments & Queue",
-      "Blood Bank",
-      "Dental & Eye Clinic",
-      "Procurement & Assets",
-      "Full SHA Claims",
-      "Full eTIMS Integration",
-      "User & Role Mgmt",
-    ],
-  },
-  {
-    name: "MediCore Advanced",
-    subtitle: "Medium Level 3 & 4 (30–80 Beds)",
-    setup: "320,000",
-    sla: "28,000",
-    featured: true,
-    badge: "Most Popular",
-    modules: [
-      "Emergency Dept",
-      "Ambulance Mgmt",
-      "Maternity Suite",
-      "ICU/HDU Module",
-      "Physio & Nutrition",
-      "Dialysis Unit",
-      "Specialized Clinics",
-      "User Portals",
-      "Executive Dash",
-      "Insurance Billing",
-      "IPD/OPD Workflows",
-      "Admissions & Beds",
-      "Radiology & Lab",
-      "Pharmacy & Theatre",
-      "Blood Bank Suite",
-      "Procurement & Assets",
-      "Full SHA & eTIMS",
-    ],
-  },
-  {
-    name: "MediCore Enterprise",
-    subtitle: "Level 4 & 5 Facilities (80–150 Beds)",
-    setup: "580,000",
-    sla: "45,000",
-    modules: [
-      "Multi-Branch Support",
-      "HR & Payroll Engine",
-      "Finance & Accounting",
-      "Mortuary Mgmt",
-      "CSSD Control",
-      "Oncology Care",
-      "Mental Health Suite",
-      "Public Health Rep.",
-      "Equip. Maintenance",
-      "BI & Automation",
-      "Advanced APIs",
-      "Emergency/Ambulance",
-      "Maternity & ICU/HDU",
-      "Physio & Dialysis",
-      "IPD/OPD Full Workflows",
-      "Theatre & Radiology",
-      "Lab & Pharmacy",
-      "SHA & eTIMS Systems",
-    ],
-  },
-  {
-    name: "MediCore Prestige",
-    subtitle: "Teaching & Referral (150+ Beds)",
-    setup: "950,000",
-    setupPrefix: "From ",
-    sla: "75,000",
-    slaPrefix: "From ",
-    modulesLabel: "COMPLETE SUITE MODULES",
-    modules: [
-      "Multi-Hospital Mgmt",
-      "OPD & IPD Core Suite",
-      "Comprehensive Care",
-      "Emergency & Ambulance",
-      "Maternity & ICU Suite",
-      "Oncology & Dialysis",
-      "Mental & Nutrition",
-      "Dental & Eye Clinics",
-      "Physio & Rehab",
-      "Theatre & CSSD Engine",
-      "Lab & Blood Bank",
-      "Radiology & Imaging",
-      "Pharmacy & Retail POS",
-      "Inventory & Procure",
-      "Asset Lifecycle Mgmt",
-      "HR, Payroll & Finance",
-      "All Core Portals",
-      "SHA Claims & Ins Engine",
-      "eTIMS Integration",
-      "Executive AI Dash",
-    ],
-  },
-];
-
 function initialsOf(name) {
   return name
     .split(" ")
@@ -313,8 +180,50 @@ function initialsOf(name) {
     .toUpperCase();
 }
 
+/**
+ * Normalize whatever the API returns into a plain array of packages.
+ * Handles:
+ *  - a plain array: [ {...}, {...} ]
+ *  - DRF pagination: { count, next, previous, results: [...] }
+ *  - a single wrapped object: { data: [...] } (just in case)
+ *  - anything unexpected -> [] so .map() never blows up
+ */
+function normalizePackagesResponse(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
+
+/**
+ * Normalize a single package's module list into an array of plain
+ * strings, regardless of whether the API sends strings or
+ * PackageModule objects like { id, name, display_order }.
+ */
+function normalizeModules(modules) {
+  if (!Array.isArray(modules)) return [];
+  return modules.map((mod) => (typeof mod === "string" ? mod : mod?.name)).filter(Boolean);
+}
+
+/**
+ * Read a value from the first matching key present on the object.
+ * Lets the UI stay in sync whether the API/serializer uses the
+ * homepage's original naming (setup, sla, featured, badge) or the
+ * Django model's naming (price, monthly_sla, is_featured, badge_text).
+ */
+function pick(obj, keys, fallback = "") {
+  for (const key of keys) {
+    if (obj?.[key] !== undefined && obj?.[key] !== null && obj?.[key] !== "") {
+      return obj[key];
+    }
+  }
+  return fallback;
+}
+
 export default function HomePage() {
   const [settings, setSettings] = useState(null);
+  const [packages, setPackages] = useState([]);
+  const [isLoadingPackages, setIsLoadingPackages] = useState(true);
 
   // Single index drives both the inline carousel and the lightbox —
   // whichever screenshot is "active" is what both show.
@@ -323,9 +232,23 @@ export default function HomePage() {
 
   useEffect(() => {
     let isMounted = true;
+
+    // Fetch site settings
     getSiteSettings()
       .then((data) => isMounted && setSettings(data))
       .catch(() => {});
+
+    // Fetch packages for pricing section
+    getPackages()
+      .then((data) => {
+        if (!isMounted) return;
+        setPackages(normalizePackagesResponse(data));
+      })
+      .catch(() => {
+        if (isMounted) setPackages([]);
+      })
+      .finally(() => isMounted && setIsLoadingPackages(false));
+
     return () => {
       isMounted = false;
     };
@@ -434,6 +357,7 @@ export default function HomePage() {
   };
 
   const activeShot = SCREENSHOTS[activeIndex];
+  const safePackages = Array.isArray(packages) ? packages : [];
 
   return (
     <>
@@ -662,9 +586,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pricing — packages fetched from the MediCore package sheet.
-          Module lists are capped to the Essential card's height and
-          scroll internally on the larger tiers. */}
+      {/* Pricing — packages fetched from the API */}
       <section id="pricing" className="pricing section light-background">
         <div className="container section-title">
           <h2>Packages built around your facility size</h2>
@@ -675,48 +597,68 @@ export default function HomePage() {
           </p>
         </div>
         <div className="container">
-          <div className="row gy-4">
-            {PACKAGES.map((pkg) => (
-              <div className="col-lg-4 col-md-6" key={pkg.name}>
-                <div
-                  className={`pricing-item h-100${
-                    pkg.featured ? " featured" : ""
-                  }`}
-                >
-                  {pkg.badge && <span className="advanced">{pkg.badge}</span>}
-                  <h3>{pkg.name}</h3>
-                  <p className="pricing-subtitle">{pkg.subtitle}</p>
-                  <h4>
-                    <sup>KES</sup>
-                    {pkg.setupPrefix || ""}
-                    {pkg.setup}
-                    <span> setup</span>
-                  </h4>
-                  <p className="pricing-sla">
-                    + KES {pkg.slaPrefix || ""}
-                    {pkg.sla}/mo SLA
-                  </p>
-                  <p className="pricing-modules-label">
-                    {pkg.modulesLabel || "All Included Modules"}
-                    <span className="pricing-scroll-hint">scroll for more</span>
-                  </p>
-                  <ul>
-                    {pkg.modules.map((mod) => (
-                      <li key={mod}>
-                        <i className="bi bi-check-circle"></i>
-                        {mod}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="btn-wrap">
-                    <Link to="/contact" className="btn-buy">
-                      Talk to Sales
-                    </Link>
-                  </div>
-                </div>
+          {isLoadingPackages ? (
+            <div className="text-center py-5">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading packages...</span>
               </div>
-            ))}
-          </div>
+              <p className="mt-3">Loading packages…</p>
+            </div>
+          ) : safePackages.length === 0 ? (
+            <div className="text-center py-5">
+              <p className="text-muted">No packages available at the moment.</p>
+            </div>
+          ) : (
+            <div className="row gy-4">
+              {safePackages.map((pkg) => {
+                const isFeatured = pick(pkg, ["featured", "is_featured"], false);
+                const badge = pick(pkg, ["badge", "badge_text"]);
+                const pricePrefix = pick(pkg, ["price_prefix", "setupPrefix"]);
+                const price = pick(pkg, ["price", "setup"]);
+                const slaPrefix = pick(pkg, ["monthly_sla_prefix", "sla_prefix", "slaPrefix"]);
+                const sla = pick(pkg, ["monthly_sla", "sla"]);
+                const modulesLabel = pick(pkg, ["modules_label", "modulesLabel"], "All Included Modules");
+                const modules = normalizeModules(pkg.modules);
+
+                return (
+                  <div className="col-lg-4 col-md-6" key={pkg.id ?? pkg.slug ?? pkg.name}>
+                    <div className={`pricing-item h-100${isFeatured ? " featured" : ""}`}>
+                      {badge && <span className="advanced">{badge}</span>}
+                      <h3>{pkg.name}</h3>
+                      <p className="pricing-subtitle">{pkg.tagline}</p>
+                      <h4>
+                        <sup>KES</sup>
+                        {pricePrefix}
+                        {price}
+                        <span> setup</span>
+                      </h4>
+                      <p className="pricing-sla">
+                        + KES {slaPrefix}
+                        {sla}/mo SLA
+                      </p>
+                      <p className="pricing-modules-label">
+                        {modulesLabel}
+                        <span className="pricing-scroll-hint">scroll for more</span>
+                      </p>
+                      <ul>
+                        {modules.map((mod) => (
+                          <li key={mod}>
+                            <i className="bi bi-check-circle"></i>
+                            {mod}
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="btn-wrap">
+                        <Link to="/contact" className="btn-buy">
+                          Talk to Sales
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 

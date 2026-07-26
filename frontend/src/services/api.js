@@ -1,204 +1,328 @@
-import axios from "axios";
+/**
+ * API Service for Medicore HMIS Frontend
+ * Base URL: http://localhost:8000/api/
+ */
 
-// In dev, Vite proxies /api to the Django backend (see vite.config.js).
-// In production, set VITE_API_BASE_URL to the deployed API origin.
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
-const client = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-// Normalizes DRF's paginated { count, next, previous, results } shape
-// down to a plain array, so pages don't each re-implement this check.
-function toArray(response) {
-  const data = response.data;
-  if (Array.isArray(data)) return data;
-  if (data && Array.isArray(data.results)) return data.results;
-  return [];
-}
-
-client.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const message =
-      error.response?.data?.detail ||
-      error.response?.statusText ||
-      error.message ||
-      "Something went wrong. Please try again.";
-    return Promise.reject(new Error(message));
+// Helper function for handling API responses
+const handleResponse = async (response) => {
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || `API Error: ${response.status}`);
   }
-);
+  return response.json();
+};
 
-// ---------------------------------------------------------------------
-// Module categories
-// ---------------------------------------------------------------------
-export const getModuleCategories = () =>
-  client.get("/module-categories/").then(toArray);
-
-// ---------------------------------------------------------------------
-// Modules
-// ---------------------------------------------------------------------
-export const getModules = (params = {}) =>
-  client.get("/modules/", { params }).then(toArray);
-
-export const getModuleBySlug = (slug) =>
-  client.get(`/modules/${slug}/`).then((res) => res.data);
-
-// ---------------------------------------------------------------------
-// Packages
-// ---------------------------------------------------------------------
-export const getPackages = () => client.get("/packages/").then(toArray);
-
-export const getFeaturedPackages = () =>
-  client.get("/packages/featured/").then((res) => res.data);
-
-export const getPackageBySlug = (slug) =>
-  client.get(`/packages/${slug}/`).then((res) => res.data);
-
-// ---------------------------------------------------------------------
-// Testimonials
-// ---------------------------------------------------------------------
-export const getTestimonials = (featuredOnly = false) =>
-  client
-    .get("/testimonials/", { params: featuredOnly ? { featured: "true" } : {} })
-    .then(toArray);
-
-// ---------------------------------------------------------------------
-// FAQs
-// ---------------------------------------------------------------------
-export const getFAQs = () => client.get("/faqs/").then(toArray);
-
-// ---------------------------------------------------------------------
-// Team (Developers )
-// ---------------------------------------------------------------------
-export const getTeamMembers = () => client.get("/team/").then(toArray);
-
-// NEW: Alias for getTeamMembers to match Medicio theme naming
-export const getDoctors = () => client.get("/team/").then(toArray);
-
-// ---------------------------------------------------------------------
-// Departments (from your API or we can use static data)
-// ---------------------------------------------------------------------
-export const getDepartments = () => 
-  client.get("/departments/").then(toArray).catch(() => {
-    // If endpoint doesn't exist, return static data
-    return [
-      {
-        id: 1,
-        name: "Cardiology",
-        description: "Comprehensive heart care services",
-        details: "State-of-the-art cardiac care with advanced diagnostics.",
-        image: "/assets/img/departments-1.jpg"
-      },
-      {
-        id: 2,
-        name: "Neurology",
-        description: "Specialized care for neurological disorders",
-        details: "Expert diagnosis and treatment for neurological conditions.",
-        image: "/assets/img/departments-2.jpg"
-      },
-      // Add more as needed
-    ];
+// Helper function for GET requests
+const get = async (endpoint) => {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
+  return handleResponse(response);
+};
 
-// ---------------------------------------------------------------------
-// Gallery
-// ---------------------------------------------------------------------
-export const getGalleryImages = () => 
-  client.get("/gallery/").then(toArray).catch(() => {
-    // If endpoint doesn't exist, return static data
-    return [
-      { id: 1, image: "/assets/img/gallery/gallery-1.jpg", title: "Facility 1" },
-      { id: 2, image: "/assets/img/gallery/gallery-2.jpg", title: "Facility 2" },
-      // Add more as needed
-    ];
+// Helper function for POST requests
+const post = async (endpoint, data) => {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
   });
+  return handleResponse(response);
+};
 
-// ---------------------------------------------------------------------
-// Contact form
-// ---------------------------------------------------------------------
-export const submitContactMessage = (payload) =>
-  client.post("/contact/", payload).then((res) => res.data);
+// ============================================
+// PACKAGES API
+// ============================================
 
-// NEW: Alias for submitContactMessage to match Medicio theme naming
-export const submitContactForm = (payload) =>
-  client.post("/contact/", payload).then((res) => res.data);
+/**
+ * Get all active packages
+ * @returns {Promise<Array>} List of packages
+ */
+export const getPackages = async () => {
+  return get('/packages/');
+};
 
-// ---------------------------------------------------------------------
-// Book a demo / Appointment
-// ---------------------------------------------------------------------
-export const submitDemoRequest = (payload) =>
-  client.post("/book-demo/", payload).then((res) => res.data);
+/**
+ * Get a single package by slug
+ * @param {string} slug - Package slug
+ * @returns {Promise<Object>} Package details
+ */
+export const getPackageBySlug = async (slug) => {
+  return get(`/packages/${slug}/`);
+};
 
-// NEW: Appointment booking
-export const createAppointment = (payload) =>
-  client.post("/appointments/", payload).then((res) => res.data);
+// ============================================
+// TEAM API
+// ============================================
 
-// NEW: Alias for submitDemoRequest to match Appointment section
-export const submitAppointment = (payload) =>
-  client.post("/appointments/", payload).then((res) => res.data);
+/**
+ * Get all active team members
+ * @returns {Promise<Array>} List of team members
+ */
+export const getTeamMembers = async () => {
+  return get('/team/');
+};
 
-// ---------------------------------------------------------------------
-// Site settings (logo, hero copy, contact details)
-// ---------------------------------------------------------------------
-export const getSiteSettings = () =>
-  client.get("/site-settings/").then((res) => res.data);
+// ============================================
+// SERVICES API
+// ============================================
 
-// ---------------------------------------------------------------------
-// NEW: Statistics / Counters
-// ---------------------------------------------------------------------
-export const getStats = () => 
-  client.get("/stats/").then(toArray).catch(() => {
-    // If endpoint doesn't exist, return default stats
-    return [
-      { icon: "fas fa-user-md", value: 25, label: "Doctors" },
-      { icon: "far fa-hospital", value: 15, label: "Departments" },
-      { icon: "fas fa-flask", value: 8, label: "Research Labs" },
-      { icon: "fas fa-award", value: 150, label: "Awards" }
-    ];
+/**
+ * Get all active services
+ * @returns {Promise<Array>} List of services
+ */
+export const getServices = async () => {
+  return get('/services/');
+};
+
+/**
+ * Get a single service by slug
+ * @param {string} slug - Service slug
+ * @returns {Promise<Object>} Service details
+ */
+export const getServiceBySlug = async (slug) => {
+  return get(`/services/${slug}/`);
+};
+
+// ============================================
+// CONTACT API
+// ============================================
+
+/**
+ * Submit a contact message
+ * @param {Object} data - Contact form data
+ * @param {string} data.name - Sender's name
+ * @param {string} data.email - Sender's email
+ * @param {string} data.subject - Message subject
+ * @param {string} data.message - Message content
+ * @returns {Promise<Object>} Response with success message
+ */
+export const submitContactMessage = async (data) => {
+  return post('/contact/', data);
+};
+
+// ============================================
+// APPOINTMENT / BOOK DEMO API
+// ============================================
+
+/**
+ * Submit a demo appointment request
+ * @param {Object} data - Appointment form data
+ * @param {string} data.name - Full name
+ * @param {string} data.email - Email address
+ * @param {string} data.phone - Phone number
+ * @param {string} data.facility_name - Facility name
+ * @param {string} data.facility_type - Type of facility
+ * @param {number} data.bed_capacity - Number of beds
+ * @param {string} data.preferred_date - Preferred demo date
+ * @param {string} data.interested_package - Package interested in
+ * @param {string} data.message - Additional notes
+ * @returns {Promise<Object>} Response with success message
+ */
+export const createAppointment = async (data) => {
+  return post('/appointments/', data);
+};
+
+// ============================================
+// FAQ API
+// ============================================
+
+/**
+ * Get all active FAQs
+ * @returns {Promise<Array>} List of FAQs
+ */
+export const getFAQs = async () => {
+  return get('/faqs/');
+};
+
+// ============================================
+// SITE SETTINGS API
+// ============================================
+
+/**
+ * Get all site settings as a key-value object
+ * @returns {Promise<Object>} Site settings
+ */
+export const getSiteSettings = async () => {
+  return get('/settings/');
+};
+
+/**
+ * Get a specific site setting by key
+ * @param {string} key - Setting key
+ * @returns {Promise<Object>} Setting value
+ */
+export const getSiteSetting = async (key) => {
+  return get(`/settings/${key}/`);
+};
+
+// ============================================
+// ADMIN API (for content management)
+// ============================================
+
+/**
+ * Get all packages (admin only)
+ * @returns {Promise<Array>} List of all packages
+ */
+export const adminGetPackages = async () => {
+  return get('/admin/packages/');
+};
+
+/**
+ * Create a new package (admin only)
+ * @param {Object} data - Package data
+ * @returns {Promise<Object>} Created package
+ */
+export const adminCreatePackage = async (data) => {
+  return post('/admin/packages/', data);
+};
+
+/**
+ * Update a package (admin only)
+ * @param {string} slug - Package slug
+ * @param {Object} data - Package data
+ * @returns {Promise<Object>} Updated package
+ */
+export const adminUpdatePackage = async (slug, data) => {
+  const response = await fetch(`${API_BASE_URL}/admin/packages/${slug}/`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
   });
+  return handleResponse(response);
+};
 
-// ---------------------------------------------------------------------
-// NEW: Features (static or from API)
-// ---------------------------------------------------------------------
-export const getFeatures = () => 
-  client.get("/features/").then(toArray).catch(() => {
-    // If endpoint doesn't exist, return default features
-    return [
-      {
-        icon: "fa-solid fa-hand-holding-medical",
-        title: "SHA Integration",
-        description: "Direct claims submission to the Social Health Authority with real-time validation."
-      },
-      {
-        icon: "fa-solid fa-suitcase-medical",
-        title: "eTIMS Compliance",
-        description: "KRA-compliant electronic tax invoicing on every bill generated."
-      },
-      {
-        icon: "fa-solid fa-staff-snake",
-        title: "Bed Management",
-        description: "Live bed occupancy tracking across wards and wings."
-      },
-      {
-        icon: "fa-solid fa-lungs",
-        title: "Patient Records",
-        description: "Digital patient records with fast search and retrieval."
-      }
-    ];
+/**
+ * Delete a package (admin only)
+ * @param {string} slug - Package slug
+ * @returns {Promise<Object>} Deletion confirmation
+ */
+export const adminDeletePackage = async (slug) => {
+  const response = await fetch(`${API_BASE_URL}/admin/packages/${slug}/`, {
+    method: 'DELETE',
   });
+  if (!response.ok) {
+    throw new Error(`Delete failed: ${response.status}`);
+  }
+  return { message: 'Package deleted successfully' };
+};
 
-// ---------------------------------------------------------------------
-// NEW: Services (you already have getModules, but adding alias)
-// ---------------------------------------------------------------------
-export const getServices = getModules;
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
 
-// ---------------------------------------------------------------------
-// NEW: Pricing (you already have getPackages, but adding alias)
-// ---------------------------------------------------------------------
-export const getPricing = getPackages;
+/**
+ * Format currency in KES
+ * @param {string|number} amount - Amount to format
+ * @returns {string} Formatted currency string
+ */
+export const formatCurrency = (amount) => {
+  const num = typeof amount === 'string' ? parseFloat(amount.replace(/,/g, '')) : amount;
+  if (isNaN(num)) return amount;
+  return new Intl.NumberFormat('en-KE', {
+    style: 'currency',
+    currency: 'KES',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(num);
+};
 
-export default client;
+/**
+ * Format date for display
+ * @param {string} dateString - Date string
+ * @returns {string} Formatted date
+ */
+export const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('en-KE', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
+};
+
+/**
+ * Get initials from name
+ * @param {string} name - Full name
+ * @returns {string} Initials (max 2 characters)
+ */
+export const getInitials = (name) => {
+  if (!name) return '';
+  return name
+    .split(' ')
+    .filter((part) => part[0] === part[0]?.toUpperCase())
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+};
+
+/**
+ * Slugify a string
+ * @param {string} text - Text to slugify
+ * @returns {string} Slugified text
+ */
+export const slugify = (text) => {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-');
+};
+
+// ============================================
+// DEFAULT EXPORT
+// ============================================
+
+const api = {
+  // Packages
+  getPackages,
+  getPackageBySlug,
+  
+  // Team
+  getTeamMembers,
+  
+  // Services
+  getServices,
+  getServiceBySlug,
+  
+  // Contact
+  submitContactMessage,
+  
+  // Appointments
+  createAppointment,
+  
+  // FAQs
+  getFAQs,
+  
+  // Site Settings
+  getSiteSettings,
+  getSiteSetting,
+  
+  // Admin
+  adminGetPackages,
+  adminCreatePackage,
+  adminUpdatePackage,
+  adminDeletePackage,
+  
+  // Utilities
+  formatCurrency,
+  formatDate,
+  getInitials,
+  slugify,
+};
+
+export default api;

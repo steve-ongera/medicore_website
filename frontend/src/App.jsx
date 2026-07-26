@@ -10,7 +10,7 @@ import CaseStudiesPage from "./pages/CaseStudiesPage.jsx"; // New - replaced Doc
 import PackagesPage from "./pages/PackagesPage.jsx";
 import PackageDetailPage from "./pages/PackageDetailPage.jsx";
 import PricingPage from "./pages/PricingPage.jsx";
-import GalleryPage from "./pages/GalleryPage.jsx";
+//import GalleryPage from "./pages/GalleryPage.jsx";
 import AppointmentPage from "./pages/AppointmentPage.jsx";
 import ContactPage from "./pages/ContactPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
@@ -29,7 +29,7 @@ export default function App() {
           <Route path="/packages" element={<PackagesPage />} />
           <Route path="/packages/:slug" element={<PackageDetailPage />} />
           <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/gallery" element={<GalleryPage />} />
+          
           <Route path="/appointment" element={<AppointmentPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="*" element={<NotFoundPage />} />
