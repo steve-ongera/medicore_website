@@ -22,39 +22,42 @@ import screenshotReports from "../assets/img/screenshots/Screenshot 2026-07-16 1
 
 const SITE_URL = "https://medicorehmis.co.ke";
 
+// Icons switched from Font Awesome (fa-solid fa-...) to Bootstrap Icons
+// (bi bi-...) so they match the icon set used everywhere else in the
+// theme and don't require the Font Awesome stylesheet to be loaded.
 const CORE_FEATURES = [
   {
-    icon: "fa-solid fa-hand-holding-medical",
+    icon: "bi bi-shield-check",
     title: "SHA Integration",
     description:
       "Submit claims directly to the Social Health Authority with real-time validation — no manual re-keying, fewer rejected claims.",
   },
   {
-    icon: "fa-solid fa-suitcase-medical",
+    icon: "bi bi-file-earmark-check",
     title: "eTIMS Compliance",
     description:
       "Every invoice is KRA eTIMS-compliant out of the box, so your facility stays on the right side of tax law automatically.",
   },
   {
-    icon: "fa-solid fa-bed-pulse",
+    icon: "bi bi-hospital",
     title: "Bed Management",
     description:
       "Live bed occupancy across every ward and wing, so admissions and transfers stop relying on whiteboards and phone calls.",
   },
   {
-    icon: "fa-solid fa-file-waveform",
+    icon: "bi bi-file-earmark-text",
     title: "Patient Records",
     description:
       "Fast, searchable digital records shared across departments — from outpatient triage to discharge summaries.",
   },
   {
-    icon: "fa-solid fa-pills",
+    icon: "bi bi-capsule",
     title: "Pharmacy & Inventory",
     description:
       "Track stock levels, expiries, and dispensing in real time, with low-stock alerts before you run out.",
   },
   {
-    icon: "fa-solid fa-file-invoice-dollar",
+    icon: "bi bi-receipt",
     title: "Billing & Insurance",
     description:
       "Handle cash, insurance, and SHA billing from one screen, with automatic reconciliation against claims submitted.",
