@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, Link } from "react-router-dom";
 import logo from "../assets/img/logo.png";
+import { getPackages } from "../services/api.js";
 
 const NAV_LINKS = [
   { to: "/", label: "Home" },
@@ -11,22 +12,56 @@ const NAV_LINKS = [
   { to: "/contact", label: "Contact" },
 ];
 
-const DROPDOWN_LINKS = [
-  { to: "/packages", label: "All Packages" },
-  { to: "/packages/starter", label: "Starter" },
-  { to: "/packages/standard", label: "Standard" },
-  { to: "/packages/enterprise", label: "Enterprise" },
+// Fallback used only if the API call fails or returns nothing, so the
+// dropdown never renders empty.
+const FALLBACK_PACKAGES = [
+  { id: 1, name: "Essential", slug: "essential" },
+  { id: 2, name: "Professional", slug: "professional" },
+  { id: 3, name: "Advanced", slug: "advanced" },
+  { id: 4, name: "Enterprise", slug: "enterprise" },
+  { id: 5, name: "Prestige", slug: "prestige" },
+  { id: 6, name: "International", slug: "international" },
 ];
+
+// Normalize whatever the API returns into a plain array — handles a
+// plain array, DRF pagination ({ results: [...] }), or a wrapped
+// { data: [...] } shape, same as PackagesPage.
+function normalizeListResponse(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [packages, setPackages] = useState([]);
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Fetch the same package list the Packages page uses, so the
+  // dropdown always matches what's actually available — no more
+  // hand-maintained duplicate list to keep in sync.
+  useEffect(() => {
+    let isMounted = true;
+    getPackages()
+      .then((data) => {
+        if (!isMounted) return;
+        const list = normalizeListResponse(data);
+        setPackages(list.length > 0 ? list : FALLBACK_PACKAGES);
+      })
+      .catch(() => {
+        if (isMounted) setPackages(FALLBACK_PACKAGES);
+      });
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -102,7 +137,7 @@ export default function Navbar() {
                 </li>
               ))}
 
-              {/* Packages Dropdown */}
+              {/* Packages Dropdown — populated from the API */}
               <li className="dropdown">
                 <a
                   href="#"
@@ -113,16 +148,27 @@ export default function Navbar() {
                   <i className="bi bi-chevron-down toggle-dropdown"></i>
                 </a>
                 <ul className={isDropdownOpen ? "dropdown-active" : ""}>
-                  {DROPDOWN_LINKS.map((link) => (
-                    <li key={link.to}>
+                  <li>
+                    <NavLink
+                      to="/packages"
+                      onClick={() => {
+                        closeMobileMenu();
+                        setIsDropdownOpen(false);
+                      }}
+                    >
+                      All Packages
+                    </NavLink>
+                  </li>
+                  {packages.map((pkg) => (
+                    <li key={pkg.id ?? pkg.slug}>
                       <NavLink
-                        to={link.to}
+                        to={`/packages/${pkg.slug}`}
                         onClick={() => {
                           closeMobileMenu();
                           setIsDropdownOpen(false);
                         }}
                       >
-                        {link.label}
+                        {pkg.name}
                       </NavLink>
                     </li>
                   ))}

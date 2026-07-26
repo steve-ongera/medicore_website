@@ -1,7 +1,50 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getPackages } from "../services/api.js";
+
+// Fallback used only if the API call fails or returns nothing, so the
+// column never renders empty.
+const FALLBACK_PACKAGES = [
+  { id: 1, name: "Essential", slug: "essential" },
+  { id: 2, name: "Professional", slug: "professional" },
+  { id: 3, name: "Advanced", slug: "advanced" },
+  { id: 4, name: "Enterprise", slug: "enterprise" },
+  { id: 5, name: "Prestige", slug: "prestige" },
+  { id: 6, name: "International", slug: "international" },
+];
+
+// Normalize whatever the API returns into a plain array — handles a
+// plain array, DRF pagination ({ results: [...] }), or a wrapped
+// { data: [...] } shape, same as PackagesPage.
+function normalizeListResponse(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const [packages, setPackages] = useState([]);
+
+  // Pull the same package list the Packages page uses, so this column
+  // always matches what's actually available instead of a hand-kept
+  // duplicate list.
+  useEffect(() => {
+    let isMounted = true;
+    getPackages()
+      .then((data) => {
+        if (!isMounted) return;
+        const list = normalizeListResponse(data);
+        setPackages(list.length > 0 ? list : FALLBACK_PACKAGES);
+      })
+      .catch(() => {
+        if (isMounted) setPackages(FALLBACK_PACKAGES);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <footer id="footer" className="footer light-background">
@@ -47,7 +90,8 @@ export default function Footer() {
                   <li><Link to="/services"><i className="bi bi-chevron-right"></i> Services</Link></li>
                   <li><Link to="/packages"><i className="bi bi-chevron-right"></i> Packages</Link></li>
                   <li><Link to="/contact"><i className="bi bi-chevron-right"></i> Contact</Link></li>
-                   <li><Link to="/contact"><i className="bi bi-chevron-right"></i> Ministry of Health</Link></li>
+                  {/* Same destination as "Contact" above, so this one is a placeholder */}
+                  <li><Link to="#"><i className="bi bi-chevron-right"></i> Ministry of Health</Link></li>
                 </ul>
               </div>
 
@@ -55,23 +99,27 @@ export default function Footer() {
                 <h4>Services</h4>
                 <ul>
                   <li><Link to="/services"><i className="bi bi-chevron-right"></i> HMIS Implementation</Link></li>
-                  <li><Link to="/services"><i className="bi bi-chevron-right"></i> SHA Integration</Link></li>
-                  <li><Link to="/services"><i className="bi bi-chevron-right"></i> eTIMS Compliance</Link></li>
-                  <li><Link to="/services"><i className="bi bi-chevron-right"></i> Training &amp; Support</Link></li>
-                  <li><Link to="/services"><i className="bi bi-chevron-right"></i> Data Migrations </Link></li>
-                  <li><Link to="/services"><i className="bi bi-chevron-right"></i> Security Auditing </Link></li>
+                  {/* These all shared the same "/services" link — kept the
+                      first one real, the rest are placeholders until each
+                      service gets its own page/anchor. */}
+                  <li><Link to="#"><i className="bi bi-chevron-right"></i> SHA Integration</Link></li>
+                  <li><Link to="#"><i className="bi bi-chevron-right"></i> eTIMS Compliance</Link></li>
+                  <li><Link to="#"><i className="bi bi-chevron-right"></i> Training &amp; Support</Link></li>
+                  <li><Link to="#"><i className="bi bi-chevron-right"></i> Data Migrations </Link></li>
+                  <li><Link to="#"><i className="bi bi-chevron-right"></i> Security Auditing </Link></li>
                 </ul>
               </div>
 
               <div className="col-lg-3 col-md-6 footer-links">
                 <h4>Packages</h4>
                 <ul>
-                  <li><Link to="/packages"><i className="bi bi-chevron-right"></i> Essential</Link></li>
-                  <li><Link to="/packages"><i className="bi bi-chevron-right"></i> Professional</Link></li>
-                  <li><Link to="/packages"><i className="bi bi-chevron-right"></i> Advanced</Link></li>
-                  <li><Link to="/packages"><i className="bi bi-chevron-right"></i> Enterprise</Link></li>
-                  <li><Link to="/packages"><i className="bi bi-chevron-right"></i> Prestige</Link></li>
-                  <li><Link to="/packages"><i className="bi bi-chevron-right"></i> International</Link></li>
+                  {packages.map((pkg) => (
+                    <li key={pkg.id ?? pkg.slug}>
+                      <Link to={`/packages/${pkg.slug}`}>
+                        <i className="bi bi-chevron-right"></i> {pkg.name}
+                      </Link>
+                    </li>
+                  ))}
                 </ul>
               </div>
 
@@ -83,7 +131,8 @@ export default function Footer() {
                   <li><Link to="/case-studies"><i className="bi bi-chevron-right"></i> Case Studies</Link></li>
                   <li><Link to="/packages#faq"><i className="bi bi-chevron-right"></i> FAQ</Link></li>
                   <li><Link to="/contact"><i className="bi bi-chevron-right"></i> SHA & Etims</Link></li>
-                  <li><Link to="/contact"><i className="bi bi-chevron-right"></i> Email</Link></li>
+                  {/* Same destination as "SHA & Etims" above */}
+                  <li><Link to="#"><i className="bi bi-chevron-right"></i> Email</Link></li>
                 </ul>
               </div>
             </div>
