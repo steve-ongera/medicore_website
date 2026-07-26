@@ -25,42 +25,6 @@ const PROBLEMS_SOLVED = [
   },
 ];
 
-// TODO: replace phone/email placeholders with real contact details.
-const CORE_TEAM = [
-  {
-    id: "core-1",
-    name: "Steve Ongera",
-    role: "Managing Director",
-    initials: "SO",
-    phone: "+254 700 000 001",
-    email: "steve@medicorehmis.co.ke",
-  },
-  {
-    id: "core-2",
-    name: "Team Member",
-    role: "Backend Developer",
-    initials: "BD",
-    phone: "",
-    email: "dev@medicorehmis.co.ke",
-  },
-  {
-    id: "core-3",
-    name: "Team Member",
-    role: "Sales Agent",
-    initials: "SA",
-    phone: "+254 700 000 003",
-    email: "sales@medicorehmis.co.ke",
-  },
-  {
-    id: "core-4",
-    name: "Team Member",
-    role: "Client Support Lead",
-    initials: "CS",
-    phone: "+254 700 000 004",
-    email: "support@medicorehmis.co.ke",
-  },
-];
-
 // Updated stats with Bootstrap icons
 const PROOF_STATS = [
   { icon: "bi bi-building", value: "40+", label: "Facilities running on Medicore" },
@@ -167,6 +131,17 @@ const styles = {
   },
 };
 
+// Normalize whatever the API returns into a plain array of team
+// members. Handles a plain array, DRF pagination ({ results: [...] }),
+// or a wrapped { data: [...] } shape — falls back to [] otherwise so
+// .map() never throws.
+function normalizeTeamResponse(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
+
 export default function AboutPage() {
   const [team, setTeam] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -174,13 +149,17 @@ export default function AboutPage() {
   useEffect(() => {
     let isMounted = true;
     getTeamMembers()
-      .then((data) => isMounted && setTeam(data))
-      .catch(() => {})
+      .then((data) => isMounted && setTeam(normalizeTeamResponse(data)))
+      .catch(() => {
+        if (isMounted) setTeam([]);
+      })
       .finally(() => isMounted && setIsLoading(false));
     return () => {
       isMounted = false;
     };
   }, []);
+
+  const safeTeam = Array.isArray(team) ? team : [];
 
   const schema = useMemo(
     () => ({
@@ -410,68 +389,30 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Team Section - PERFECT STYLING LIKE ABOUT CARDS */}
-      <section id="core-team" className="doctors section">
+      {/* Team Section - All members from API */}
+      <section id="team" className="doctors section">
         <div className="container section-title" data-aos="fade-up">
           <h2>Meet the Team</h2>
           <p>Dedicated professionals committed to transforming healthcare in Kenya</p>
         </div>
 
         <div className="container">
-          <div className="row gy-4">
-            {CORE_TEAM.map((member, index) => (
-              <div
-                key={member.id}
-                className="col-lg-3 col-md-6"
-                data-aos="fade-up"
-                data-aos-delay={100 + index * 100}
-              >
-                <div className="team-card">
-                  <div className="team-card-avatar">
-                    <div className="avatar-initials">
-                      {member.initials}
-                    </div>
-                  </div>
-                  <h4>{member.name}</h4>
-                  <span className="team-role">{member.role}</span>
-                  <div className="team-divider"></div>
-                  <div className="team-contact">
-                    {member.phone && (
-                      <a href={`tel:${member.phone.replace(/\s+/g, "")}`} className="team-contact-link">
-                        <i className="bi bi-telephone-fill"></i>
-                        <span>{member.phone}</span>
-                      </a>
-                    )}
-                    {member.email && (
-                      <a href={`mailto:${member.email}`} className="team-contact-link">
-                        <i className="bi bi-envelope-fill"></i>
-                        <span>{member.email}</span>
-                      </a>
-                    )}
-                  </div>
-                </div>
+          {isLoading ? (
+            <div className="text-center py-5" data-aos="fade-up">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading team members...</span>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Wider Team Section (from CMS, if populated) */}
-      {!isLoading && team.length > 0 && (
-        <section id="team" className="doctors section light-background">
-          <div className="container section-title" data-aos="fade-up">
-            <h2>Our Team</h2>
-            <p>
-              Built and supported by people who've run hospital IT in Kenya —
-              not an offshore team guessing at requirements.
-            </p>
-          </div>
-
-          <div className="container">
+              <p className="mt-3">Loading team members…</p>
+            </div>
+          ) : safeTeam.length === 0 ? (
+            <div className="text-center py-5" data-aos="fade-up">
+              <p className="text-muted">No team members available at the moment.</p>
+            </div>
+          ) : (
             <div className="row gy-4">
-              {team.map((member, index) => (
+              {safeTeam.map((member, index) => (
                 <div
-                  key={member.id}
+                  key={member.id ?? member.email ?? member.name}
                   className="col-lg-3 col-md-6"
                   data-aos="fade-up"
                   data-aos-delay={100 + index * 100}
@@ -487,7 +428,7 @@ export default function AboutPage() {
                         />
                       ) : (
                         <div className="avatar-initials">
-                          {member.name?.charAt(0)}
+                          {member.name?.charAt(0) || '?'}
                         </div>
                       )}
                     </div>
@@ -495,6 +436,20 @@ export default function AboutPage() {
                     <span className="team-role">{member.role}</span>
                     {member.bio && <p className="team-bio">{member.bio}</p>}
                     <div className="team-divider"></div>
+                    <div className="team-contact">
+                      {member.phone && (
+                        <a href={`tel:${member.phone.replace(/\s+/g, "")}`} className="team-contact-link">
+                          <i className="bi bi-telephone-fill"></i>
+                          <span>{member.phone}</span>
+                        </a>
+                      )}
+                      {member.email && (
+                        <a href={`mailto:${member.email}`} className="team-contact-link">
+                          <i className="bi bi-envelope-fill"></i>
+                          <span>{member.email}</span>
+                        </a>
+                      )}
+                    </div>
                     <div className="team-social">
                       {member.linkedin_url && (
                         <a href={member.linkedin_url} target="_blank" rel="noopener noreferrer" className="team-social-link">
@@ -511,9 +466,9 @@ export default function AboutPage() {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-      )}
+          )}
+        </div>
+      </section>
 
       {/* Closing CTA */}
       <section className="call-to-action section accent-background">
