@@ -22,9 +22,8 @@ const ServicesPage = () => {
     fetchServices();
   }, []);
 
-  // fa-solid, matching the icon set used in the homepage's Core
-  // Features grid (previously "fas fa-*", the older FA5-style prefix).
-  const serviceIcons = [
+  // Fallback icons if service doesn't have one defined
+  const fallbackIcons = [
     "fa-solid fa-heart-pulse",
     "fa-solid fa-pills",
     "fa-solid fa-hospital-user",
@@ -34,6 +33,14 @@ const ServicesPage = () => {
     "fa-solid fa-stethoscope",
     "fa-solid fa-truck-medical",
   ];
+
+  // Get icon for a service (use service.icon if available, otherwise fallback)
+  const getServiceIcon = (service, index) => {
+    if (service.icon) {
+      return service.icon;
+    }
+    return fallbackIcons[index % fallbackIcons.length];
+  };
 
   // Only build the ItemList schema once services have actually loaded,
   // so we don't publish an empty list to search engines during fetch.
@@ -96,9 +103,7 @@ const ServicesPage = () => {
         </nav>
       </div>
 
-      {/* Services Section — same section-title + service-item grid
-          pattern as the homepage's "Everything your facility needs"
-          section, so the two pages read as one system. */}
+      {/* Services Section */}
       <section id="services" className="services section">
         <div className="container section-title" data-aos="fade-up">
           <h2>Explore our modules</h2>
@@ -121,6 +126,10 @@ const ServicesPage = () => {
               <i className="bi bi-exclamation-triangle me-2"></i>
               {error}
             </div>
+          ) : services.length === 0 ? (
+            <div className="text-center py-5" data-aos="fade-up">
+              <p className="text-muted">No services available at the moment.</p>
+            </div>
           ) : (
             <div className="row gy-4">
               {services.map((service, index) => (
@@ -132,7 +141,7 @@ const ServicesPage = () => {
                 >
                   <div className="service-item position-relative">
                     <div className="icon">
-                      <i className={serviceIcons[index % serviceIcons.length]}></i>
+                      <i className={getServiceIcon(service, index)}></i>
                     </div>
                     <Link to={`/services/${service.slug}`} className="stretched-link">
                       <h3>{service.name}</h3>
