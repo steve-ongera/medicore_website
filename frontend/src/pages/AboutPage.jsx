@@ -410,7 +410,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Professional Team Section */}
+      {/* Team Section - PERFECT STYLING LIKE ABOUT CARDS */}
       <section id="core-team" className="doctors section">
         <div className="container section-title" data-aos="fade-up">
           <h2>Meet the Team</h2>
@@ -418,42 +418,36 @@ export default function AboutPage() {
         </div>
 
         <div className="container">
-          <div className="row gy-4 justify-content-center">
+          <div className="row gy-4">
             {CORE_TEAM.map((member, index) => (
               <div
                 key={member.id}
-                className="col-lg-3 col-md-6 d-flex align-items-stretch"
+                className="col-lg-3 col-md-6"
                 data-aos="fade-up"
                 data-aos-delay={100 + index * 100}
               >
-                <div className="team-member professional-card">
-                  <div className="member-img professional-avatar">
-                    <div className="avatar-circle">
+                <div className="team-card">
+                  <div className="team-card-avatar">
+                    <div className="avatar-initials">
                       {member.initials}
                     </div>
-                    <div className="member-status">
-                      <span className="status-dot active"></span>
-                      Available
-                    </div>
                   </div>
-                  <div className="member-info professional-info">
-                    <h4>{member.name}</h4>
-                    <span className="member-role">{member.role}</span>
-                    <div className="member-divider"></div>
-                    <div className="member-contact professional-contact">
-                      {member.phone && (
-                        <a href={`tel:${member.phone.replace(/\s+/g, "")}`} className="contact-link">
-                          <i className="bi bi-telephone-fill"></i>
-                          <span>{member.phone}</span>
-                        </a>
-                      )}
-                      {member.email && (
-                        <a href={`mailto:${member.email}`} className="contact-link">
-                          <i className="bi bi-envelope-fill"></i>
-                          <span>{member.email}</span>
-                        </a>
-                      )}
-                    </div>
+                  <h4>{member.name}</h4>
+                  <span className="team-role">{member.role}</span>
+                  <div className="team-divider"></div>
+                  <div className="team-contact">
+                    {member.phone && (
+                      <a href={`tel:${member.phone.replace(/\s+/g, "")}`} className="team-contact-link">
+                        <i className="bi bi-telephone-fill"></i>
+                        <span>{member.phone}</span>
+                      </a>
+                    )}
+                    {member.email && (
+                      <a href={`mailto:${member.email}`} className="team-contact-link">
+                        <i className="bi bi-envelope-fill"></i>
+                        <span>{member.email}</span>
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -478,49 +472,40 @@ export default function AboutPage() {
               {team.map((member, index) => (
                 <div
                   key={member.id}
-                  className="col-lg-3 col-md-6 d-flex align-items-stretch"
+                  className="col-lg-3 col-md-6"
                   data-aos="fade-up"
                   data-aos-delay={100 + index * 100}
                 >
-                  <div className="team-member professional-card">
-                    <div className="member-img professional-avatar">
+                  <div className="team-card">
+                    <div className="team-card-avatar">
                       {member.photo ? (
                         <img
                           src={member.photo}
                           className="img-fluid"
                           alt={member.name}
                           loading="lazy"
-                          style={{ width: "100%", height: "300px", objectFit: "cover" }}
                         />
                       ) : (
-                        <div className="avatar-circle large">
+                        <div className="avatar-initials">
                           {member.name?.charAt(0)}
                         </div>
                       )}
-                      {member.photo && (
-                        <div className="member-status">
-                          <span className="status-dot active"></span>
-                          Active
-                        </div>
-                      )}
                     </div>
-                    <div className="member-info professional-info">
-                      <h4>{member.name}</h4>
-                      <span className="member-role">{member.role}</span>
-                      {member.bio && <p className="member-bio">{member.bio}</p>}
-                      <div className="member-divider"></div>
-                      <div className="social professional-social">
-                        {member.linkedin_url && (
-                          <a href={member.linkedin_url} target="_blank" rel="noopener noreferrer" className="social-link">
-                            <i className="bi bi-linkedin"></i>
-                          </a>
-                        )}
-                        {member.twitter_url && (
-                          <a href={member.twitter_url} target="_blank" rel="noopener noreferrer" className="social-link">
-                            <i className="bi bi-twitter-x"></i>
-                          </a>
-                        )}
-                      </div>
+                    <h4>{member.name}</h4>
+                    <span className="team-role">{member.role}</span>
+                    {member.bio && <p className="team-bio">{member.bio}</p>}
+                    <div className="team-divider"></div>
+                    <div className="team-social">
+                      {member.linkedin_url && (
+                        <a href={member.linkedin_url} target="_blank" rel="noopener noreferrer" className="team-social-link">
+                          <i className="bi bi-linkedin"></i>
+                        </a>
+                      )}
+                      {member.twitter_url && (
+                        <a href={member.twitter_url} target="_blank" rel="noopener noreferrer" className="team-social-link">
+                          <i className="bi bi-twitter-x"></i>
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
