@@ -87,6 +87,29 @@ export default function Footer() {
                 </ul>
               </div>
             </div>
+
+            {/* Developer credit — sits directly below the Useful Links / Services
+                columns, still inside the footer-top grid, above the copyright bar */}
+            <div
+              className="footer-developer mt-4 pt-3"
+              style={{
+                borderTop: '1px solid var(--gray-mid)',
+                fontSize: '13px',
+                color: 'var(--default-color)',
+                opacity: 0.7,
+              }}
+            >
+              <i className="bi bi-code-slash me-1"></i>
+              This site is developed by <strong>Steve Ongera</strong>
+              <span className="mx-2">|</span>
+              <i className="bi bi-telephone me-1"></i>
+              <a
+                href="tel:+254112284093"
+                style={{ color: 'var(--default-color)', textDecoration: 'none' }}
+              >
+                0112284093
+              </a>
+            </div>
           </div>
 
         </div>
@@ -97,20 +120,6 @@ export default function Footer() {
           © <span>{year}</span> <strong className="px-1 sitename">Medicore HMIS</strong> 
           <span> - All Rights Reserved</span>
         </p>
-        <div className="credits">
-          <i className="bi bi-heart-fill me-1" style={{ color: 'var(--accent-color)', fontSize: '12px' }}></i>
-          Empowering Kenyan Healthcare Through Digital Innovation
-          <i className="bi bi-heart-fill ms-1" style={{ color: 'var(--accent-color)', fontSize: '12px' }}></i>
-        </div>
-        <div className="developer-credit mt-2" style={{ fontSize: '13px', color: 'var(--default-color)', opacity: 0.6 }}>
-          <i className="bi bi-code-slash me-1"></i>
-          Developed  by  Steve Ongera
-          <span className="mx-1">|</span>
-          <i className="bi bi-telephone me-1"></i>
-          <a href="tel:+254112284093" style={{ color: 'var(--default-color)', textDecoration: 'none' }}>
-            0112284093
-          </a>
-        </div>
       </div>
     </footer>
   );
