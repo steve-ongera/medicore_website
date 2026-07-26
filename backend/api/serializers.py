@@ -1,147 +1,237 @@
 from rest_framework import serializers
 from .models import (
-    ModuleCategory,
-    Module,
-    Package,
-    PackageModule,
-    PackageFeature,
-    Testimonial,
-    FAQ,
-    TeamMember,
-    ContactMessage,
-    DemoRequest,
-    SiteSetting,
+    Package, PackageModule, TeamMember, Service, 
+    ContactMessage, Appointment, FAQ, SiteSetting
 )
 
 
-class ModuleCategorySerializer(serializers.ModelSerializer):
+class PackageModuleSerializer(serializers.ModelSerializer):
+    """
+    Serializer for package modules/features
+    """
+    
     class Meta:
-        model = ModuleCategory
-        fields = ["id", "name", "slug", "order"]
-
-
-class ModuleSerializer(serializers.ModelSerializer):
-    category = ModuleCategorySerializer(read_only=True)
-    category_id = serializers.PrimaryKeyRelatedField(
-        queryset=ModuleCategory.objects.all(), source="category",
-        write_only=True, required=False, allow_null=True
-    )
-
-    class Meta:
-        model = Module
+        model = PackageModule
         fields = [
-            "id", "name", "slug", "short_code", "category", "category_id",
-            "icon", "short_description", "description", "is_core",
-            "is_active", "order",
+            'id',
+            'name',
+            'display_order',
         ]
 
 
-class ModuleListSerializer(serializers.ModelSerializer):
-    """Lightweight module representation, used nested inside Package output."""
-    is_addon = serializers.BooleanField(read_only=True, default=False)
-
-    class Meta:
-        model = Module
-        fields = [
-            "id", "name", "slug", "short_code", "icon",
-            "short_description", "is_core", "is_addon",
-        ]
-
-
-class PackageFeatureSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PackageFeature
-        fields = ["id", "text", "order"]
-
-
-class PackageListSerializer(serializers.ModelSerializer):
-    """Compact serializer for the packages grid / homepage cards."""
-    module_count = serializers.SerializerMethodField()
-
+class PackageSerializer(serializers.ModelSerializer):
+    """
+    Serializer for packages with their modules
+    """
+    
+    modules = PackageModuleSerializer(many=True, read_only=True)
+    
     class Meta:
         model = Package
         fields = [
-            "id", "name", "slug", "tagline", "image", "price",
-            "billing_cycle", "max_beds", "max_users", "is_featured",
-            "order", "module_count",
+            'id',
+            'name',
+            'slug',
+            'tagline',
+            'description',
+            'price',
+            'price_prefix',
+            'monthly_sla',
+            'monthly_sla_prefix',
+            'is_featured',
+            'badge_text',
+            'modules_label',
+            'display_order',
+            'is_active',
+            'modules',
         ]
-
-    def get_module_count(self, obj):
-        return obj.modules.count()
-
-
-class PackageDetailSerializer(serializers.ModelSerializer):
-    """Full package detail, including modules (with add-on flag) and features."""
-    modules = serializers.SerializerMethodField()
-    features = PackageFeatureSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Package
-        fields = [
-            "id", "name", "slug", "tagline", "description", "image",
-            "price", "billing_cycle", "max_beds", "max_users",
-            "is_featured", "modules", "features",
-        ]
-
-    def get_modules(self, obj):
-        links = PackageModule.objects.filter(package=obj).select_related(
-            "module", "module__category"
-        )
-        result = []
-        for link in links:
-            data = ModuleListSerializer(link.module).data
-            data["is_addon"] = link.is_addon
-            result.append(data)
-        return result
-
-
-class TestimonialSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Testimonial
-        fields = [
-            "id", "client_name", "slug", "client_role", "organization",
-            "image", "message", "rating", "is_featured", "order",
-        ]
-
-
-class FAQSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FAQ
-        fields = ["id", "question", "answer", "order"]
+    
+    def to_representation(self, instance):
+        """
+        Customize the output to match the frontend expected format
+        """
+        data = super().to_representation(instance)
+        
+        # Transform to match the frontend structure
+        return {
+            'id': data['id'],
+            'name': data['name'],
+            'slug': data['slug'],
+            'tagline': data['tagline'],
+            'description': data['description'],
+            'price': data['price'],
+            'price_prefix': data['price_prefix'],
+            'sla': data['monthly_sla'],
+            'sla_prefix': data['monthly_sla_prefix'],
+            'featured': data['is_featured'],
+            'badge': data['badge_text'],
+            'modulesLabel': data['modules_label'],
+            'modules': [module['name'] for module in data['modules']],
+        }
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
+    """
+    Serializer for team members
+    """
+    
+    photo_url = serializers.SerializerMethodField()
+    
     class Meta:
         model = TeamMember
-        fields = ["id", "name", "slug", "role", "photo", "bio", "linkedin_url", "order"]
+        fields = [
+            'id',
+            'name',
+            'role',
+            'photo',
+            'photo_url',
+            'bio',
+            'phone',
+            'email',
+            'linkedin_url',
+            'twitter_url',
+            'display_order',
+            'is_active',
+        ]
+    
+    def get_photo_url(self, obj):
+        """
+        Get the full URL of the photo if it exists
+        """
+        if obj.photo and hasattr(obj.photo, 'url'):
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.photo.url)
+            return obj.photo.url
+        return None
+    
+    def to_representation(self, instance):
+        """
+        Customize the output to match the frontend expected format
+        """
+        data = super().to_representation(instance)
+        
+        # Frontend expects 'photo' field with URL
+        return {
+            'id': data['id'],
+            'name': data['name'],
+            'role': data['role'],
+            'photo': data['photo_url'] or data['photo'],
+            'bio': data['bio'],
+            'phone': data['phone'],
+            'email': data['email'],
+            'linkedin_url': data['linkedin_url'],
+            'twitter_url': data['twitter_url'],
+        }
+
+
+class ServiceSerializer(serializers.ModelSerializer):
+    """
+    Serializer for services
+    """
+    
+    class Meta:
+        model = Service
+        fields = [
+            'id',
+            'name',
+            'slug',
+            'short_description',
+            'description',
+            'icon',
+            'image',
+            'display_order',
+            'is_active',
+        ]
+    
+    def to_representation(self, instance):
+        """
+        Customize the output to match the frontend expected format
+        """
+        data = super().to_representation(instance)
+        
+        # Frontend expects 'short_description'
+        return {
+            'id': data['id'],
+            'name': data['name'],
+            'slug': data['slug'],
+            'short_description': data['short_description'],
+            'description': data['description'],
+            'icon': data['icon'],
+            'image': data['image'],
+        }
 
 
 class ContactMessageSerializer(serializers.ModelSerializer):
+    """
+    Serializer for contact form submissions
+    """
+    
     class Meta:
         model = ContactMessage
         fields = [
-            "id", "full_name", "email", "phone", "organization",
-            "interested_package", "subject", "message", "status", "created_at",
+            'id',
+            'name',
+            'email',
+            'subject',
+            'message',
+            'is_read',
+            'created_at',
         ]
-        read_only_fields = ["id", "status", "created_at"]
+        read_only_fields = ['id', 'is_read', 'created_at']
 
 
-class DemoRequestSerializer(serializers.ModelSerializer):
+class AppointmentSerializer(serializers.ModelSerializer):
+    """
+    Serializer for demo appointment requests
+    """
+    
     class Meta:
-        model = DemoRequest
+        model = Appointment
         fields = [
-            "id", "full_name", "email", "phone", "facility_name",
-            "facility_type", "package", "preferred_date", "notes",
-            "is_contacted", "created_at",
+            'id',
+            'name',
+            'email',
+            'phone',
+            'facility_name',
+            'facility_type',
+            'bed_capacity',
+            'interested_package',
+            'preferred_date',
+            'message',
+            'is_contacted',
+            'notes',
+            'created_at',
+            'updated_at',
         ]
-        read_only_fields = ["id", "is_contacted", "created_at"]
+        read_only_fields = ['id', 'is_contacted', 'notes', 'created_at', 'updated_at']
+
+
+class FAQSerializer(serializers.ModelSerializer):
+    """
+    Serializer for FAQs
+    """
+    
+    class Meta:
+        model = FAQ
+        fields = [
+            'id',
+            'question',
+            'answer',
+            'display_order',
+            'is_active',
+        ]
 
 
 class SiteSettingSerializer(serializers.ModelSerializer):
+    """
+    Serializer for site settings
+    """
+    
     class Meta:
         model = SiteSetting
         fields = [
-            "site_name", "logo", "hero_headline", "hero_subtext", "hero_image",
-            "support_email", "support_phone", "address",
-            "facebook_url", "twitter_url", "linkedin_url", "instagram_url",
+            'key',
+            'value',
+            'description',
         ]

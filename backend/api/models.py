@@ -2,325 +2,238 @@ from django.db import models
 from django.utils.text import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-
-def module_icon_path(instance, filename):
-    return f"modules/icons/{instance.slug}/{filename}"
-
-
-def package_image_path(instance, filename):
-    return f"packages/{instance.slug}/{filename}"
-
-
-def testimonial_image_path(instance, filename):
-    return f"testimonials/{instance.slug}/{filename}"
-
-
-def general_upload_path(instance, filename):
-    return f"site/{instance.__class__.__name__.lower()}/{filename}"
-
-
-class TimeStampedModel(models.Model):
-    """Abstract base with created/updated timestamps."""
+class Package(models.Model):
+    """
+    Hospital management software packages for pricing section
+    """
+    
+    # Basic Information
+    name = models.CharField(max_length=100, help_text="Package name e.g., MediCore Essential")
+    slug = models.SlugField(max_length=120, unique=True, blank=True, help_text="URL-friendly version of name")
+    tagline = models.CharField(max_length=200, blank=True, help_text="Short description under package name")
+    description = models.TextField(blank=True, help_text="Detailed description of the package")
+    
+    # Pricing
+    price = models.CharField(max_length=20, help_text="Setup fee in KES (e.g., '50,000')")
+    price_prefix = models.CharField(max_length=20, blank=True, default="", help_text="e.g., 'From '")
+    monthly_sla = models.CharField(max_length=20, help_text="Monthly SLA fee in KES (e.g., '5,000')")
+    monthly_sla_prefix = models.CharField(max_length=20, blank=True, default="", help_text="e.g., 'From '")
+    
+    # Display Options
+    is_featured = models.BooleanField(default=False, help_text="Mark as featured/most popular")
+    badge_text = models.CharField(max_length=50, blank=True, help_text="e.g., 'Most Popular'")
+    modules_label = models.CharField(max_length=100, blank=True, default="All Included Modules", 
+                                     help_text="Custom label for modules section")
+    display_order = models.IntegerField(default=0, help_text="Order in which packages appear")
+    
+    # Status
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    
     class Meta:
-        abstract = True
-
-
-class SlugModel(TimeStampedModel):
-    """Abstract base that auto-generates a unique slug from `name` on save."""
-    slug = models.SlugField(max_length=220, unique=True, blank=True)
-
-    class Meta:
-        abstract = True
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            base_slug = slugify(self.name)
-            slug = base_slug
-            counter = 1
-            model_class = self.__class__
-            while model_class.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-                slug = f"{base_slug}-{counter}"
-                counter += 1
-            self.slug = slug
-        super().save(*args, **kwargs)
-
-
-class ModuleCategory(models.Model):
-    """
-    Groups modules e.g. Clinical, Compliance, Operations, Finance.
-    Used to organise the modules listing on the packages/module pages.
-    """
-    name = models.CharField(max_length=120, unique=True)
-    slug = models.SlugField(max_length=140, unique=True, blank=True)
-    order = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Module Category"
-        verbose_name_plural = "Module Categories"
-        ordering = ["order", "name"]
-
+        ordering = ['display_order', 'name']
+        verbose_name = "Package"
+        verbose_name_plural = "Packages"
+    
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
-
-
-class Module(SlugModel):
-    """
-    A single HMIS module/feature, e.g. SHA Integration, eTIMS Integration,
-    Bed Management, Outpatient (OP), Inpatient Admission (IP ADM), Pharmacy,
-    Laboratory, Radiology, Billing, Records, etc.
-    """
-    category = models.ForeignKey(
-        ModuleCategory, on_delete=models.SET_NULL, null=True, blank=True,
-        related_name="modules"
-    )
-    name = models.CharField(max_length=150)
-    short_code = models.CharField(
-        max_length=20, blank=True,
-        help_text="Short tag e.g. SHA, ETIMS, OP, IP-ADM, BED, PHARM"
-    )
-    icon = models.ImageField(upload_to=module_icon_path, blank=True, null=True)
-    short_description = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    is_core = models.BooleanField(
-        default=False,
-        help_text="Core modules ship in every package regardless of tier."
-    )
-    is_active = models.BooleanField(default=True)
-    order = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ["order", "name"]
-
-    def __str__(self):
-        return self.name
-
-
-class Package(SlugModel):
-    """
-    A Medicore HMIS pricing/feature package, e.g. Starter, Standard, Premium,
-    Enterprise. Each package bundles a set of Modules.
-    """
-    BILLING_CYCLE_CHOICES = [
-        ("monthly", "Monthly"),
-        ("annually", "Annually"),
-        ("one_time", "One-Time / Custom"),
-    ]
-
-    name = models.CharField(max_length=150)
-    tagline = models.CharField(max_length=255, blank=True)
-    description = models.TextField(blank=True)
-    image = models.ImageField(upload_to=package_image_path, blank=True, null=True)
-    price = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True,
-        help_text="Price in KES. Leave blank for 'Contact us' / custom pricing."
-    )
-    billing_cycle = models.CharField(
-        max_length=20, choices=BILLING_CYCLE_CHOICES, default="monthly"
-    )
-    max_beds = models.PositiveIntegerField(
-        null=True, blank=True, help_text="Bed capacity limit for this package, if any."
-    )
-    max_users = models.PositiveIntegerField(
-        null=True, blank=True, help_text="Staff/user account limit for this package, if any."
-    )
-    modules = models.ManyToManyField(
-        Module, through="PackageModule", related_name="packages", blank=True
-    )
-    is_featured = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    order = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ["order", "price"]
-
+    
     def __str__(self):
         return self.name
 
 
 class PackageModule(models.Model):
     """
-    Through-model linking a Package to a Module, so extra context (e.g. a
-    module being 'add-on only' for a given package) can be attached later.
+    Individual modules/features included in a package
     """
-    package = models.ForeignKey(Package, on_delete=models.CASCADE)
-    module = models.ForeignKey(Module, on_delete=models.CASCADE)
-    is_addon = models.BooleanField(
-        default=False, help_text="True if this module is an optional add-on for the package."
-    )
-
-    class Meta:
-        unique_together = ("package", "module")
-        ordering = ["module__order"]
-
-    def __str__(self):
-        return f"{self.package.name} — {self.module.name}"
-
-
-class PackageFeature(models.Model):
-    """
-    Free-text bullet-point features/highlights listed under a package card,
-    separate from Modules (e.g. '24/7 support', 'Free onboarding & training').
-    """
-    package = models.ForeignKey(
-        Package, on_delete=models.CASCADE, related_name="features"
-    )
-    text = models.CharField(max_length=255)
-    order = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ["order"]
-
-    def __str__(self):
-        return self.text
-
-
-class Testimonial(SlugModel):
-    client_name = models.CharField(max_length=150)
-    client_role = models.CharField(max_length=150, blank=True)
-    organization = models.CharField(max_length=150, blank=True)
-    image = models.ImageField(upload_to=testimonial_image_path, blank=True, null=True)
-    message = models.TextField()
-    rating = models.PositiveSmallIntegerField(
-        default=5, validators=[MinValueValidator(1), MaxValueValidator(5)]
-    )
-    is_featured = models.BooleanField(default=False)
-    order = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ["order", "-created_at"]
-
-    @property
-    def name(self):
-        # SlugModel.save() slugifies `self.name`; alias it to client_name.
-        return self.client_name
-
-    def __str__(self):
-        return f"{self.client_name} ({self.organization})"
-
-
-class FAQ(models.Model):
-    question = models.CharField(max_length=255)
-    answer = models.TextField()
-    order = models.PositiveIntegerField(default=0)
+    
+    package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name='modules')
+    name = models.CharField(max_length=100, help_text="Module name")
+    display_order = models.IntegerField(default=0, help_text="Order in which modules appear")
     is_active = models.BooleanField(default=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    
     class Meta:
-        verbose_name = "FAQ"
-        verbose_name_plural = "FAQs"
-        ordering = ["order"]
-
+        ordering = ['display_order', 'name']
+        verbose_name = "Package Module"
+        verbose_name_plural = "Package Modules"
+    
     def __str__(self):
-        return self.question
+        return f"{self.package.name} - {self.name}"
 
 
-class TeamMember(SlugModel):
-    name = models.CharField(max_length=150)
-    role = models.CharField(max_length=150)
-    photo = models.ImageField(upload_to="team/", blank=True, null=True)
-    bio = models.TextField(blank=True)
-    linkedin_url = models.URLField(blank=True)
-    order = models.PositiveIntegerField(default=0)
-
+class TeamMember(models.Model):
+    """
+    Team members for About page
+    """
+    
+    name = models.CharField(max_length=100, help_text="Full name of team member")
+    role = models.CharField(max_length=100, help_text="Job title/position")
+    photo = models.ImageField(upload_to='team/', blank=True, null=True, help_text="Profile image")
+    bio = models.TextField(blank=True, help_text="Short biography")
+    
+    # Contact & Social
+    phone = models.CharField(max_length=20, blank=True, help_text="Contact phone number")
+    email = models.EmailField(blank=True, help_text="Contact email address")
+    linkedin_url = models.URLField(blank=True, help_text="LinkedIn profile URL")
+    twitter_url = models.URLField(blank=True, help_text="Twitter/X profile URL")
+    
+    # Display
+    display_order = models.IntegerField(default=0, help_text="Order in which team members appear")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     class Meta:
-        ordering = ["order"]
-
+        ordering = ['display_order', 'name']
+        verbose_name = "Team Member"
+        verbose_name_plural = "Team Members"
+    
     def __str__(self):
         return self.name
 
 
-class ContactMessage(TimeStampedModel):
-    """Submissions from the public Contact Us page."""
-    STATUS_CHOICES = [
-        ("new", "New"),
-        ("read", "Read"),
-        ("responded", "Responded"),
-    ]
-
-    full_name = models.CharField(max_length=150)
-    email = models.EmailField()
-    phone = models.CharField(max_length=20, blank=True)
-    organization = models.CharField(max_length=150, blank=True)
-    interested_package = models.ForeignKey(
-        Package, on_delete=models.SET_NULL, null=True, blank=True,
-        related_name="contact_messages"
-    )
-    subject = models.CharField(max_length=255, blank=True)
-    message = models.TextField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="new")
-
+class Service(models.Model):
+    """
+    Services/modules offered
+    """
+    
+    name = models.CharField(max_length=100, help_text="Service name")
+    slug = models.SlugField(max_length=120, unique=True, blank=True, help_text="URL-friendly version of name")
+    short_description = models.CharField(max_length=200, help_text="Brief description shown on services grid")
+    description = models.TextField(blank=True, help_text="Full detailed description")
+    icon = models.CharField(max_length=50, blank=True, help_text="Font Awesome icon class (e.g., 'fa-solid fa-heart-pulse')")
+    image = models.ImageField(upload_to='services/', blank=True, null=True, help_text="Service image")
+    
+    # Display
+    display_order = models.IntegerField(default=0, help_text="Order in which services appear")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     class Meta:
-        ordering = ["-created_at"]
-
+        ordering = ['display_order', 'name']
+        verbose_name = "Service"
+        verbose_name_plural = "Services"
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+    
     def __str__(self):
-        return f"{self.full_name} — {self.subject or 'General Inquiry'}"
+        return self.name
 
 
-class DemoRequest(TimeStampedModel):
-    """A dedicated 'Book a Demo' CTA, separate from general contact messages."""
-    full_name = models.CharField(max_length=150)
+class ContactMessage(models.Model):
+    """
+    Contact form submissions
+    """
+    
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Contact Message"
+        verbose_name_plural = "Contact Messages"
+    
+    def __str__(self):
+        return f"{self.name} - {self.subject}"
+
+
+class Appointment(models.Model):
+    """
+    Demo appointment/book a demo requests
+    """
+    
+    FACILITY_TYPES = [
+        ('Clinic', 'Clinic'),
+        ('Nursing Home', 'Nursing Home'),
+        ('Hospital', 'Hospital'),
+        ('Other', 'Other'),
+    ]
+    
+    INTERESTED_PACKAGES = [
+        ('Essential', 'Essential'),
+        ('Standard', 'Standard'),
+        ('Premium', 'Premium'),
+        ('Not sure yet', 'Not sure yet'),
+    ]
+    
+    # Personal Details
+    name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=20)
-    facility_name = models.CharField(max_length=150)
-    facility_type = models.CharField(
-        max_length=100, blank=True,
-        help_text="e.g. Hospital, Clinic, Nursing Home, Dispensary"
-    )
-    package = models.ForeignKey(
-        Package, on_delete=models.SET_NULL, null=True, blank=True,
-        related_name="demo_requests"
-    )
-    preferred_date = models.DateField(null=True, blank=True)
-    notes = models.TextField(blank=True)
-    is_contacted = models.BooleanField(default=False)
-
+    
+    # Facility Details
+    facility_name = models.CharField(max_length=200)
+    facility_type = models.CharField(max_length=50, choices=FACILITY_TYPES)
+    bed_capacity = models.PositiveIntegerField(blank=True, null=True, help_text="Number of beds")
+    
+    # Demo Preferences
+    interested_package = models.CharField(max_length=50, choices=INTERESTED_PACKAGES, blank=True)
+    preferred_date = models.DateTimeField()
+    message = models.TextField(blank=True, help_text="Additional information about facility needs")
+    
+    # Status
+    is_contacted = models.BooleanField(default=False, help_text="Has the team contacted this lead?")
+    notes = models.TextField(blank=True, help_text="Internal notes about this lead")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     class Meta:
-        ordering = ["-created_at"]
-
+        ordering = ['-created_at']
+        verbose_name = "Appointment"
+        verbose_name_plural = "Appointments"
+    
     def __str__(self):
-        return f"Demo request — {self.facility_name}"
+        return f"{self.name} - {self.facility_name}"
+
+
+class FAQ(models.Model):
+    """
+    Frequently Asked Questions for Packages page
+    """
+    
+    question = models.CharField(max_length=255)
+    answer = models.TextField()
+    display_order = models.IntegerField(default=0, help_text="Order in which FAQs appear")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['display_order', 'question']
+        verbose_name = "FAQ"
+        verbose_name_plural = "FAQs"
+    
+    def __str__(self):
+        return self.question[:50]
 
 
 class SiteSetting(models.Model):
     """
-    Singleton-style model for global site content (hero copy, contact
-    details, social links) editable from the Django admin.
+    Site-wide settings (contact info, etc.)
     """
-    site_name = models.CharField(max_length=150, default="Medicore HMIS")
-    logo = models.ImageField(upload_to="site/", blank=True, null=True)
-    hero_headline = models.CharField(max_length=255, blank=True)
-    hero_subtext = models.TextField(blank=True)
-    hero_image = models.ImageField(upload_to="site/", blank=True, null=True)
-    support_email = models.EmailField(blank=True)
-    support_phone = models.CharField(max_length=20, blank=True)
-    address = models.CharField(max_length=255, blank=True)
-    facebook_url = models.URLField(blank=True)
-    twitter_url = models.URLField(blank=True)
-    linkedin_url = models.URLField(blank=True)
-    instagram_url = models.URLField(blank=True)
-
+    
+    key = models.CharField(max_length=100, unique=True, help_text="Setting key e.g., 'support_phone'")
+    value = models.TextField(help_text="Setting value")
+    description = models.CharField(max_length=255, blank=True, help_text="Description of what this setting controls")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     class Meta:
         verbose_name = "Site Setting"
         verbose_name_plural = "Site Settings"
-
-    def save(self, *args, **kwargs):
-        self.pk = 1
-        super().save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        pass
-
-    @classmethod
-    def load(cls):
-        obj, _ = cls.objects.get_or_create(pk=1)
-        return obj
-
+    
     def __str__(self):
-        return self.site_name
+        return self.key

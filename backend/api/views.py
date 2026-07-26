@@ -1,129 +1,258 @@
-from rest_framework import viewsets, generics, permissions, filters
+from rest_framework import generics, status, views
 from rest_framework.response import Response
-from rest_framework.decorators import action
-from django_filters.rest_framework import DjangoFilterBackend
-
+from rest_framework.permissions import AllowAny, IsAdminUser
+from django.shortcuts import get_object_or_404
+from django.http import Http404
 from .models import (
-    ModuleCategory,
-    Module,
-    Package,
-    Testimonial,
-    FAQ,
-    TeamMember,
-    ContactMessage,
-    DemoRequest,
-    SiteSetting,
+    Package, TeamMember, Service, ContactMessage, 
+    Appointment, FAQ, SiteSetting
 )
 from .serializers import (
-    ModuleCategorySerializer,
-    ModuleSerializer,
-    PackageListSerializer,
-    PackageDetailSerializer,
-    TestimonialSerializer,
-    FAQSerializer,
-    TeamMemberSerializer,
-    ContactMessageSerializer,
-    DemoRequestSerializer,
-    SiteSettingSerializer,
+    PackageSerializer, TeamMemberSerializer, ServiceSerializer,
+    ContactMessageSerializer, AppointmentSerializer, 
+    FAQSerializer, SiteSettingSerializer
 )
 
 
-class ModuleCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+# ============================================
+# PACKAGES API
+# ============================================
+
+class PackageListView(generics.ListAPIView):
     """
-    list:   GET /api/module-categories/
-    detail: GET /api/module-categories/{slug}/
+    API endpoint to retrieve all active packages
     """
-    queryset = ModuleCategory.objects.all().order_by("order", "name")
-    serializer_class = ModuleCategorySerializer
-    lookup_field = "slug"
-    permission_classes = [permissions.AllowAny]
-
-
-class ModuleViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    list:   GET /api/modules/?category=<slug>&search=sha
-    detail: GET /api/modules/{slug}/
-    """
-    queryset = Module.objects.filter(is_active=True).select_related("category")
-    serializer_class = ModuleSerializer
-    lookup_field = "slug"
-    permission_classes = [permissions.AllowAny]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ["category__slug", "is_core"]
-    search_fields = ["name", "short_code", "short_description"]
-
-
-class PackageViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    list:   GET /api/packages/
-    detail: GET /api/packages/{slug}/   (full module + feature breakdown)
-    """
-    queryset = Package.objects.filter(is_active=True).prefetch_related(
-        "modules", "features"
-    ).order_by("order", "price")
-    lookup_field = "slug"
-    permission_classes = [permissions.AllowAny]
-
-    def get_serializer_class(self):
-        if self.action == "retrieve":
-            return PackageDetailSerializer
-        return PackageListSerializer
-
-    @action(detail=False, methods=["get"], url_path="featured")
-    def featured(self, request):
-        featured_qs = self.get_queryset().filter(is_featured=True)
-        serializer = PackageListSerializer(featured_qs, many=True, context={"request": request})
-        return Response(serializer.data)
-
-
-class TestimonialViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    list: GET /api/testimonials/?featured=true
-    """
-    queryset = Testimonial.objects.all().order_by("order", "-created_at")
-    serializer_class = TestimonialSerializer
-    permission_classes = [permissions.AllowAny]
-
+    permission_classes = [AllowAny]
+    serializer_class = PackageSerializer
+    
     def get_queryset(self):
-        qs = super().get_queryset()
-        featured = self.request.query_params.get("featured")
-        if featured in ("true", "1"):
-            qs = qs.filter(is_featured=True)
-        return qs
+        return Package.objects.filter(is_active=True)
 
 
-class FAQViewSet(viewsets.ReadOnlyModelViewSet):
-    """list: GET /api/faqs/"""
-    queryset = FAQ.objects.filter(is_active=True).order_by("order")
-    serializer_class = FAQSerializer
-    permission_classes = [permissions.AllowAny]
+class PackageDetailView(generics.RetrieveAPIView):
+    """
+    API endpoint to retrieve a single package by slug
+    """
+    permission_classes = [AllowAny]
+    serializer_class = PackageSerializer
+    lookup_field = 'slug'
+    
+    def get_queryset(self):
+        return Package.objects.filter(is_active=True)
 
 
-class TeamMemberViewSet(viewsets.ReadOnlyModelViewSet):
-    """list: GET /api/team/"""
-    queryset = TeamMember.objects.all().order_by("order")
+# ============================================
+# TEAM API
+# ============================================
+
+class TeamMemberListView(generics.ListAPIView):
+    """
+    API endpoint to retrieve all active team members
+    """
+    permission_classes = [AllowAny]
     serializer_class = TeamMemberSerializer
-    permission_classes = [permissions.AllowAny]
+    
+    def get_queryset(self):
+        return TeamMember.objects.filter(is_active=True)
 
+
+# ============================================
+# SERVICES API
+# ============================================
+
+class ServiceListView(generics.ListAPIView):
+    """
+    API endpoint to retrieve all active services
+    """
+    permission_classes = [AllowAny]
+    serializer_class = ServiceSerializer
+    
+    def get_queryset(self):
+        return Service.objects.filter(is_active=True)
+
+
+class ServiceDetailView(generics.RetrieveAPIView):
+    """
+    API endpoint to retrieve a single service by slug
+    """
+    permission_classes = [AllowAny]
+    serializer_class = ServiceSerializer
+    lookup_field = 'slug'
+    
+    def get_queryset(self):
+        return Service.objects.filter(is_active=True)
+
+
+# ============================================
+# CONTACT API
+# ============================================
 
 class ContactMessageCreateView(generics.CreateAPIView):
-    """POST /api/contact/ — public contact form submission."""
-    queryset = ContactMessage.objects.all()
+    """
+    API endpoint to submit a contact message
+    """
+    permission_classes = [AllowAny]
     serializer_class = ContactMessageSerializer
-    permission_classes = [permissions.AllowAny]
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        
+        # Return success response
+        return Response({
+            'message': 'Your message has been sent successfully!',
+            'data': serializer.data
+        }, status=status.HTTP_201_CREATED)
 
 
-class DemoRequestCreateView(generics.CreateAPIView):
-    """POST /api/book-demo/ — public 'Book a Demo' form submission."""
-    queryset = DemoRequest.objects.all()
-    serializer_class = DemoRequestSerializer
-    permission_classes = [permissions.AllowAny]
+# ============================================
+# APPOINTMENT / BOOK DEMO API
+# ============================================
+
+class AppointmentCreateView(generics.CreateAPIView):
+    """
+    API endpoint to submit a demo appointment request
+    """
+    permission_classes = [AllowAny]
+    serializer_class = AppointmentSerializer
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        
+        # Return success response
+        return Response({
+            'message': 'Your demo request has been submitted successfully! We will contact you shortly.',
+            'data': serializer.data
+        }, status=status.HTTP_201_CREATED)
 
 
-class SiteSettingView(generics.RetrieveAPIView):
-    """GET /api/site-settings/ — global site content (logo, hero, contacts)."""
+# ============================================
+# FAQ API
+# ============================================
+
+class FAQListView(generics.ListAPIView):
+    """
+    API endpoint to retrieve all active FAQs
+    """
+    permission_classes = [AllowAny]
+    serializer_class = FAQSerializer
+    
+    def get_queryset(self):
+        return FAQ.objects.filter(is_active=True)
+
+
+# ============================================
+# SITE SETTINGS API
+# ============================================
+
+class SiteSettingListView(generics.ListAPIView):
+    """
+    API endpoint to retrieve all site settings
+    """
+    permission_classes = [AllowAny]
     serializer_class = SiteSettingSerializer
-    permission_classes = [permissions.AllowAny]
+    
+    def get_queryset(self):
+        return SiteSetting.objects.all()
 
-    def get_object(self):
-        return SiteSetting.load()
+
+class SiteSettingDetailView(generics.RetrieveAPIView):
+    """
+    API endpoint to retrieve a specific site setting by key
+    """
+    permission_classes = [AllowAny]
+    serializer_class = SiteSettingSerializer
+    lookup_field = 'key'
+    
+    def get_queryset(self):
+        return SiteSetting.objects.all()
+
+
+# ============================================
+# SITE SETTINGS - Combined Response
+# ============================================
+
+class SiteSettingsView(views.APIView):
+    """
+    API endpoint to retrieve all site settings as a single object
+    """
+    permission_classes = [AllowAny]
+    
+    def get(self, request, format=None):
+        settings = SiteSetting.objects.all()
+        data = {}
+        for setting in settings:
+            # Try to convert to appropriate type
+            value = setting.value
+            if value.lower() == 'true':
+                value = True
+            elif value.lower() == 'false':
+                value = False
+            elif value.isdigit():
+                value = int(value)
+            data[setting.key] = value
+        
+        return Response(data)
+
+
+# ============================================
+# ADMIN-ONLY VIEWS (Optional - for managing content)
+# ============================================
+
+class PackageAdminListView(generics.ListCreateAPIView):
+    """
+    Admin endpoint to list and create packages
+    """
+    permission_classes = [IsAdminUser]
+    serializer_class = PackageSerializer
+    queryset = Package.objects.all()
+
+
+class PackageAdminDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Admin endpoint to retrieve, update, or delete a package
+    """
+    permission_classes = [IsAdminUser]
+    serializer_class = PackageSerializer
+    queryset = Package.objects.all()
+    lookup_field = 'slug'
+
+
+class TeamMemberAdminListView(generics.ListCreateAPIView):
+    """
+    Admin endpoint to list and create team members
+    """
+    permission_classes = [IsAdminUser]
+    serializer_class = TeamMemberSerializer
+    queryset = TeamMember.objects.all()
+
+
+class TeamMemberAdminDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Admin endpoint to retrieve, update, or delete a team member
+    """
+    permission_classes = [IsAdminUser]
+    serializer_class = TeamMemberSerializer
+    queryset = TeamMember.objects.all()
+
+
+class ServiceAdminListView(generics.ListCreateAPIView):
+    """
+    Admin endpoint to list and create services
+    """
+    permission_classes = [IsAdminUser]
+    serializer_class = ServiceSerializer
+    queryset = Service.objects.all()
+
+
+class ServiceAdminDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Admin endpoint to retrieve, update, or delete a service
+    """
+    permission_classes = [IsAdminUser]
+    serializer_class = ServiceSerializer
+    queryset = Service.objects.all()
+    lookup_field = 'slug'
