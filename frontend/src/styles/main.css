@@ -110,8 +110,6 @@ h6 {
 }
 
 .header.sticky-top {
-  /* Explicit, so this never loses a specificity tie against Bootstrap's
-     own .sticky-top z-index and end up sitting under page content. */
   z-index: 1030;
 }
 
@@ -172,17 +170,12 @@ h6 {
   box-shadow: 0 6px 25px rgba(63, 187, 192, 0.4);
 }
 
-/* Safety net for small phones: with the CTA pill and the hamburger both
-   sitting in the same flex row, a very narrow viewport can squeeze the
-   toggle button to the point it's hard to tap. Shrinking the CTA down to
-   an icon-only button below 420px keeps the hamburger fully reachable. */
 @media (max-width: 420px) {
   .header .cta-btn {
     padding: 10px 14px;
     margin: 0 5px 0 12px;
     font-size: 0;
   }
-
   .header .cta-btn i {
     font-size: 16px;
     margin: 0;
@@ -192,12 +185,10 @@ h6 {
 /*--------------------------------------------------------------
 # Navigation Menu
 --------------------------------------------------------------*/
-/* Navmenu - Desktop */
 @media (min-width: 1200px) {
   .navmenu {
     padding: 0;
   }
-
   .navmenu ul {
     margin: 0;
     padding: 0;
@@ -205,11 +196,9 @@ h6 {
     list-style: none;
     align-items: center;
   }
-
   .navmenu li {
     position: relative;
   }
-
   .navmenu a,
   .navmenu a:focus {
     color: var(--nav-color);
@@ -225,7 +214,6 @@ h6 {
     transition: color 0.3s ease;
     letter-spacing: 0.5px;
   }
-
   .navmenu a i,
   .navmenu a:focus i {
     font-size: 12px;
@@ -233,17 +221,14 @@ h6 {
     margin-left: 5px;
     transition: transform 0.3s ease;
   }
-
   .navmenu li:last-child a {
     padding-right: 0;
   }
-
   .navmenu li:hover>a,
   .navmenu .active,
   .navmenu .active:focus {
     color: var(--nav-hover-color);
   }
-
   .navmenu .dropdown ul {
     margin: 0;
     padding: 12px 0;
@@ -260,11 +245,9 @@ h6 {
     border-radius: 8px;
     min-width: 220px;
   }
-
   .navmenu .dropdown ul li {
     min-width: 200px;
   }
-
   .navmenu .dropdown ul a {
     padding: 10px 20px;
     font-size: 14px;
@@ -272,18 +255,15 @@ h6 {
     color: var(--nav-dropdown-color);
     font-weight: 400;
   }
-
   .navmenu .dropdown ul a i {
     font-size: 12px;
   }
-
   .navmenu .dropdown ul a:hover,
   .navmenu .dropdown ul .active:hover,
   .navmenu .dropdown ul li:hover>a {
     color: var(--nav-dropdown-hover-color);
     background: var(--gray-light);
   }
-
   .navmenu .dropdown:hover>ul {
     opacity: 1;
     top: 100%;
@@ -291,7 +271,6 @@ h6 {
   }
 }
 
-/* Navmenu - Mobile */
 @media (max-width: 1199px) {
   .mobile-nav-toggle {
     color: var(--nav-color);
@@ -304,29 +283,18 @@ h6 {
     border: none;
     padding: 0;
     position: relative;
-    /* Keeps the toggle clickable above the overlay/backdrop at all times,
-       not just once .mobile-nav-active is already applied. */
     z-index: 9998;
   }
-
   .mobile-nav-toggle:hover {
     color: var(--accent-color);
   }
-
-  /* Hide the hamburger while the sidebar is open. The dedicated
-     .mobile-nav-close button (fixed inside the panel) is the only
-     close control now — this removes the old duplicate "two X icons"
-     issue caused by this button repositioning + relabeling itself
-     at the same time the close button was also visible. */
   .mobile-nav-active .mobile-nav-toggle {
     display: none;
   }
-
   .navmenu {
     padding: 0;
     z-index: 9997;
   }
-
   .navmenu ul {
     list-style: none;
     position: fixed;
@@ -341,21 +309,15 @@ h6 {
     overflow-y: auto;
     z-index: 9998;
     box-shadow: -10px 0 40px var(--shadow-color);
-    /* transform-based slide instead of animating `right`: transform is
-       compositor-only (no layout/paint per frame), so the panel opens
-       and closes smoothly even on lower-powered mobile devices. */
     transform: translateX(100%);
     visibility: hidden;
-    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                visibility 0s linear 0.35s;
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), visibility 0s linear 0.35s;
   }
-
   .navmenu.mobile-nav-active ul {
     transform: translateX(0);
     visibility: visible;
     transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
-
   .mobile-nav-close {
     position: absolute;
     top: 15px;
@@ -369,12 +331,10 @@ h6 {
     transition: all 0.3s ease;
     z-index: 9999;
   }
-
   .mobile-nav-close:hover {
     color: var(--accent-color);
     transform: rotate(90deg);
   }
-
   .mobile-nav-active .navmenu::before {
     content: "";
     position: fixed;
@@ -384,7 +344,6 @@ h6 {
     cursor: pointer;
     animation: fadeIn 0.3s ease-in-out;
   }
-
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -393,7 +352,6 @@ h6 {
       opacity: 1;
     }
   }
-
   .navmenu a,
   .navmenu a:focus {
     color: var(--nav-dropdown-color);
@@ -409,14 +367,12 @@ h6 {
     border-radius: 8px;
     margin-bottom: 2px;
   }
-
   .navmenu a:hover,
   .navmenu .active,
   .navmenu .active:focus {
     color: var(--nav-dropdown-hover-color);
     background: var(--gray-light);
   }
-
   .navmenu a i,
   .navmenu a:focus i {
     font-size: 12px;
@@ -431,12 +387,10 @@ h6 {
     transition: all 0.3s ease;
     background: var(--gray-light);
   }
-
   .navmenu a i:hover {
     background: var(--accent-color);
     color: var(--contrast-color);
   }
-
   .navmenu .dropdown ul {
     position: static;
     display: none;
@@ -447,15 +401,12 @@ h6 {
     border-radius: 8px;
     transition: all 0.3s ease;
   }
-
   .navmenu .dropdown>.dropdown-active {
     display: block;
   }
-
   .mobile-nav-active {
     overflow: hidden;
   }
-
   body.mobile-nav-active {
     overflow: hidden;
   }
@@ -792,8 +743,6 @@ section,
   overflow: hidden;
 }
 
-/* Dedicated background layer, separate from .container, so the Ken Burns
-   zoom can animate the photo without dragging the text card along with it. */
 .hero .hero-bg {
   position: absolute;
   inset: 0;
@@ -805,9 +754,6 @@ section,
   will-change: transform;
 }
 
-/* Darkening gradient behind the text card, separate from .hero-bg so the
-   Ken Burns zoom doesn't scale it. This is what lets .container go fully
-   transparent below and still keep the text readable over any photo. */
 .hero .carousel-item::before {
   content: "";
   position: absolute;
@@ -817,10 +763,6 @@ section,
   pointer-events: none;
 }
 
-/* Slow continuous zoom on whichever slide is currently active. Because
-   Bootstrap's carousel toggles the .active class on/off as slides change,
-   this animation naturally restarts every time a slide becomes active
-   again — no JS re-triggering needed. */
 .hero .carousel-item.active .hero-bg {
   animation: heroKenBurns 8s ease-out forwards;
 }
@@ -851,9 +793,6 @@ section,
   transform: translateY(30px);
 }
 
-/* Staggered fade/slide-up entrance for the text card and its contents,
-   timed so the heading leads, then the copy, then the buttons. Replays
-   on every slide change for the same reason as the Ken Burns effect above. */
 .hero .carousel-item.active .container {
   animation: heroFadeUp 0.7s ease forwards;
   animation-delay: 0.2s;
@@ -861,7 +800,7 @@ section,
 
 .hero .carousel-item.active .container h2,
 .hero .carousel-item.active .container p,
-.hero .carousel-item.active .container > .d-flex {
+.hero .carousel-item.active .container>.d-flex {
   opacity: 0;
   animation: heroFadeUp 0.6s ease forwards;
 }
@@ -874,7 +813,7 @@ section,
   animation-delay: 0.6s;
 }
 
-.hero .carousel-item.active .container > .d-flex {
+.hero .carousel-item.active .container>.d-flex {
   animation-delay: 0.75s;
 }
 
@@ -894,7 +833,7 @@ section,
   .hero .container,
   .hero .container h2,
   .hero .container p,
-  .hero .container > .d-flex {
+  .hero .container>.d-flex {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
@@ -1157,9 +1096,6 @@ section,
   position: absolute;
   left: calc(50% - 47px);
   top: calc(50% - 47px);
-}
-
-.about .pulsating-play-btn {
   width: 94px;
   height: 94px;
   background: radial-gradient(var(--accent-color) 50%, rgba(63, 187, 192, 0.4) 52%);
@@ -1198,7 +1134,7 @@ section,
 }
 
 /*--------------------------------------------------------------
-# UPDATED: About Section Cards - Professional & Clean Design
+# About Section Cards - Professional & Clean Design
 --------------------------------------------------------------*/
 .about .about-card {
   background: var(--surface-color);
@@ -1281,24 +1217,127 @@ section,
   .about .about-card {
     padding: 25px 20px;
   }
-  
   .about .about-card .card-icon {
     width: 50px;
     height: 50px;
   }
-  
   .about .about-card .card-icon i {
     font-size: 24px;
   }
-  
   .about .about-card h4 {
     font-size: 17px;
   }
 }
 
 /*--------------------------------------------------------------
-# Stats Section
+# Stats Section - Clean Professional Cards
 --------------------------------------------------------------*/
+.stats .stats-card {
+  background: var(--surface-color);
+  padding: 30px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  transition: all 0.3s ease;
+  height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats .stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stats .stats-card:hover::before {
+  opacity: 1;
+}
+
+.stats .stats-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(63, 187, 192, 0.12);
+  border-color: rgba(63, 187, 192, 0.1);
+}
+
+.stats .stats-card-icon {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #eef4ff, #e0eaff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.stats .stats-card:hover .stats-card-icon {
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
+  transform: scale(1.05);
+}
+
+.stats .stats-card-icon i {
+  font-size: 28px;
+  color: var(--accent-color);
+  transition: all 0.3s ease;
+}
+
+.stats .stats-card:hover .stats-card-icon i {
+  color: var(--contrast-color);
+}
+
+.stats .stats-card-content {
+  flex: 1;
+}
+
+.stats .stats-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--heading-color);
+  display: block;
+  line-height: 1.2;
+  margin-bottom: 4px;
+  letter-spacing: -0.5px;
+}
+
+.stats .stats-label {
+  font-size: 14px;
+  color: var(--default-color);
+  opacity: 0.7;
+  margin-bottom: 0;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .stats .stats-card {
+    padding: 20px;
+    gap: 15px;
+  }
+  .stats .stats-card-icon {
+    width: 50px;
+    height: 50px;
+  }
+  .stats .stats-card-icon i {
+    font-size: 24px;
+  }
+  .stats .stats-value {
+    font-size: 28px;
+  }
+  .stats .stats-label {
+    font-size: 13px;
+  }
+}
+
+/* Keep legacy stats-item for backward compatibility */
 .stats .stats-item {
   background-color: var(--surface-color);
   box-shadow: 0 4px 20px var(--shadow-color);
@@ -1334,6 +1373,193 @@ section,
   font-size: 16px;
   color: var(--default-color);
   opacity: 0.7;
+}
+
+/*--------------------------------------------------------------
+# Team Cards - Professional Style
+--------------------------------------------------------------*/
+.team-card {
+  background: var(--surface-color);
+  padding: 30px 25px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  transition: all 0.3s ease;
+  height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.team-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.team-card:hover::before {
+  opacity: 1;
+}
+
+.team-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(63, 187, 192, 0.12);
+  border-color: rgba(63, 187, 192, 0.1);
+}
+
+.team-card-avatar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.avatar-initials {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #eef4ff, #e0eaff);
+  color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--heading-font);
+  font-weight: 700;
+  font-size: 28px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.team-card:hover .avatar-initials {
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
+  color: var(--contrast-color);
+  transform: scale(1.05);
+}
+
+.team-card-avatar img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: all 0.3s ease;
+}
+
+.team-card:hover .team-card-avatar img {
+  transform: scale(1.05);
+}
+
+.team-card h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--heading-color);
+  margin-bottom: 4px;
+  letter-spacing: -0.3px;
+}
+
+.team-role {
+  font-size: 14px;
+  color: var(--accent-color);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.team-divider {
+  width: 30px;
+  height: 2px;
+  background: var(--accent-color);
+  margin: 12px auto;
+  opacity: 0.3;
+  border-radius: 2px;
+}
+
+.team-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.team-contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--default-color);
+  transition: all 0.3s ease;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: transparent;
+  width: 100%;
+  justify-content: center;
+}
+
+.team-contact-link:hover {
+  color: var(--accent-color);
+  background: var(--gray-light);
+  transform: translateX(4px);
+}
+
+.team-contact-link i {
+  color: var(--accent-color);
+  font-size: 14px;
+}
+
+.team-bio {
+  font-size: 13px;
+  color: var(--default-color);
+  opacity: 0.8;
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+
+.team-social {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.team-social-link {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gray-light);
+  color: var(--default-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.team-social-link:hover {
+  background: var(--accent-color);
+  color: var(--contrast-color);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(63, 187, 192, 0.3);
+}
+
+@media (max-width: 768px) {
+  .team-card {
+    padding: 25px 20px 20px;
+  }
+  .avatar-initials {
+    width: 70px;
+    height: 70px;
+    font-size: 24px;
+  }
+  .team-card-avatar img {
+    width: 70px;
+    height: 70px;
+  }
+  .team-card h4 {
+    font-size: 17px;
+  }
 }
 
 /*--------------------------------------------------------------
@@ -1593,8 +1819,7 @@ section,
 }
 
 /*--------------------------------------------------------------
-# Testimonials Section (legacy swiper-based styles kept intact
-# in case other pages / components still reference them)
+# Testimonials Section
 --------------------------------------------------------------*/
 .testimonials .testimonial-item {
   box-sizing: content-box;
@@ -2098,7 +2323,7 @@ section,
 }
 
 /*--------------------------------------------------------------
-# NEW: Contact - Google Map (beside the contact form)
+# Contact - Google Map
 --------------------------------------------------------------*/
 .contact-map-wrap {
   background-color: var(--surface-color);
@@ -2122,7 +2347,6 @@ section,
     margin-bottom: 30px;
     min-height: 320px;
   }
-
   .contact-map-wrap iframe {
     min-height: 320px;
   }
@@ -2204,9 +2428,7 @@ section,
 }
 
 /*--------------------------------------------------------------
-# NEW: Testimonials Marquee (homepage)
-# Pure CSS continuous strip, no JS/Swiper dependency. Pauses on
-# hover/focus and respects prefers-reduced-motion.
+# Testimonials Marquee
 --------------------------------------------------------------*/
 .testimonials-marquee .marquee-wrapper {
   overflow: hidden;
@@ -2233,8 +2455,6 @@ section,
     transform: translateX(0);
   }
   100% {
-    /* Track is the 8 testimonials duplicated once, so -50% is exactly
-       one full set — the loop point is seamless. */
     transform: translateX(-50%);
   }
 }
@@ -2329,9 +2549,7 @@ section,
 }
 
 /*--------------------------------------------------------------
-# NEW: Pricing Section small additions (homepage packages)
-# Layered on top of the existing .pricing rules above — nothing
-# above this block was changed.
+# Pricing Section Additions
 --------------------------------------------------------------*/
 .pricing .pricing-subtitle {
   font-size: 13px;
@@ -2378,11 +2596,6 @@ section,
   font-size: 15px;
 }
 
-/*--------------------------------------------------------------
-# UPDATE: Pricing module list capped to the Essential/first card's
-# height, with an internal scrollbar for the longer tiers. Button
-# stays pinned to the bottom of every card regardless of scroll.
---------------------------------------------------------------*/
 .pricing .pricing-item {
   display: flex;
   flex-direction: column;
@@ -2433,10 +2646,7 @@ section,
 }
 
 /*--------------------------------------------------------------
-# NEW: HMIS Screenshot Carousel + Lightbox (product preview section)
-# Single active image with prev/next arrows and dot navigation —
-# replaces the old scattered 2-column thumbnail grid. Pure React/CSS,
-# no external carousel library required.
+# Screenshot Carousel
 --------------------------------------------------------------*/
 .screenshot-carousel {
   position: relative;
@@ -2588,18 +2798,15 @@ section,
   .screenshot-carousel {
     gap: 6px;
   }
-
   .carousel-nav {
     width: 36px;
     height: 36px;
     font-size: 15px;
   }
-
   .carousel-caption {
     font-size: 13px;
     padding: 22px 14px 12px;
   }
-
   .carousel-dots {
     bottom: -24px;
   }
@@ -2704,15 +2911,12 @@ section,
     height: 40px;
     font-size: 16px;
   }
-
   .screenshot-lightbox .lightbox-prev {
     left: 10px;
   }
-
   .screenshot-lightbox .lightbox-next {
     right: 10px;
   }
-
   .screenshot-lightbox .lightbox-close {
     top: 10px;
     right: 10px;
@@ -2720,10 +2924,7 @@ section,
 }
 
 /*--------------------------------------------------------------
-# NEW: Case Study Cards + Quote Block (case studies page)
-# Replaces one-off inline styles with the same surface/shadow/radius
-# tokens used everywhere else on the site (pricing-item, service-item,
-# testimonial-card), so this page reads as part of the same system.
+# Case Study Cards
 --------------------------------------------------------------*/
 .case-study-card {
   background-color: var(--surface-color);
@@ -2741,9 +2942,6 @@ section,
   box-shadow: 0 8px 30px var(--shadow-color);
 }
 
-/*--------------------------------------------------------------
-# NEW: Case Study Card - Banner Image (replaces icon-only banner)
---------------------------------------------------------------*/
 .case-study-banner {
   height: 300px;
   position: relative;
@@ -2915,14 +3113,13 @@ section,
   .case-study-quote {
     padding: 36px 24px;
   }
-
   .case-study-quote blockquote {
     font-size: 17px;
   }
 }
 
 /*--------------------------------------------------------------
-# NEW: SHA/eTIMS Page - Compliance Callout (replaces border-left box)
+# Compliance Callout
 --------------------------------------------------------------*/
 .compliance-callout {
   background-color: var(--surface-color);
@@ -2960,7 +3157,7 @@ section,
 }
 
 /*--------------------------------------------------------------
-# NEW: About Page - Problem/Solution Cards (replaces plain numbered values)
+# Problem/Solution Cards
 --------------------------------------------------------------*/
 .problem-solution-item {
   background-color: var(--surface-color);
@@ -3015,428 +3212,7 @@ section,
 }
 
 /*--------------------------------------------------------------
-# NEW: Team Card - Contact Links (phone/email under role)
---------------------------------------------------------------*/
-.team-member .member-contact {
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px solid var(--gray-mid);
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.team-member .member-contact a {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--default-color);
-  opacity: 0.8;
-  transition: all 0.25s ease;
-}
-
-.team-member .member-contact a:hover {
-  color: var(--accent-color);
-  opacity: 1;
-}
-
-.team-member .member-contact i {
-  color: var(--accent-color);
-  font-size: 14px;
-}
-
-/*--------------------------------------------------------------
-# UPDATED: Team Section - Larger, More Professional Cards
---------------------------------------------------------------*/
-.team-member.team-card-large {
-  background: var(--surface-color);
-  border-radius: 20px;
-  box-shadow: 0 4px 30px var(--shadow-color);
-  overflow: hidden;
-  height: 100%;
-  transition: all 0.4s ease;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  padding: 40px 30px 35px;
-  text-align: center;
-  position: relative;
-}
-
-.team-member.team-card-large::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--accent-color), var(--accent-dark));
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.team-member.team-card-large:hover::before {
-  opacity: 1;
-}
-
-.team-member.team-card-large:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 16px 50px rgba(63, 187, 192, 0.15);
-  border-color: rgba(63, 187, 192, 0.1);
-}
-
-.member-avatar-large {
-  margin-bottom: 24px;
-  display: flex;
-  justify-content: center;
-}
-
-.avatar-circle-large {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
-  color: var(--contrast-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--heading-font);
-  font-weight: 700;
-  font-size: 32px;
-  box-shadow: 0 8px 30px rgba(63, 187, 192, 0.2);
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-}
-
-.team-member.team-card-large:hover .avatar-circle-large {
-  transform: scale(1.05);
-  box-shadow: 0 12px 40px rgba(63, 187, 192, 0.3);
-}
-
-.member-avatar-large img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: 0 8px 30px var(--shadow-color);
-  transition: all 0.3s ease;
-}
-
-.team-member.team-card-large:hover .member-avatar-large img {
-  transform: scale(1.05);
-}
-
-.member-info-large h4 {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--heading-color);
-  margin-bottom: 6px;
-  letter-spacing: -0.3px;
-}
-
-.member-role-large {
-  font-size: 15px;
-  color: var(--accent-color);
-  font-weight: 500;
-  display: block;
-  margin-bottom: 16px;
-}
-
-.member-divider-large {
-  width: 40px;
-  height: 2px;
-  background: var(--accent-color);
-  margin: 16px auto;
-  opacity: 0.3;
-  border-radius: 2px;
-}
-
-.member-contact-large {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-}
-
-.contact-link-large {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  color: var(--default-color);
-  opacity: 0.8;
-  transition: all 0.3s ease;
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: var(--gray-light);
-  width: 100%;
-  justify-content: center;
-}
-
-.contact-link-large:hover {
-  color: var(--accent-color);
-  opacity: 1;
-  background: var(--gray-mid);
-  transform: translateX(4px);
-}
-
-.contact-link-large i {
-  color: var(--accent-color);
-  font-size: 16px;
-}
-
-.member-bio-large {
-  font-size: 14px;
-  color: var(--default-color);
-  opacity: 0.8;
-  margin: 12px 0 0;
-  line-height: 1.6;
-}
-
-.social-large {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-top: 4px;
-}
-
-.social-link-large {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--gray-light);
-  color: var(--default-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  font-size: 16px;
-}
-
-.social-link-large:hover {
-  background: var(--accent-color);
-  color: var(--contrast-color);
-  transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(63, 187, 192, 0.3);
-}
-
-@media (max-width: 768px) {
-  .team-member.team-card-large {
-    padding: 30px 20px 25px;
-  }
-  
-  .avatar-circle-large {
-    width: 100px;
-    height: 100px;
-    font-size: 28px;
-  }
-  
-  .member-avatar-large img {
-    width: 100px;
-    height: 100px;
-  }
-  
-  .member-info-large h4 {
-    font-size: 20px;
-  }
-  
-  .contact-link-large {
-    font-size: 13px;
-    padding: 5px 10px;
-  }
-}
-
-/*--------------------------------------------------------------
-# PERFECT TEAM CARDS - Matching About Card Style
---------------------------------------------------------------*/
-.team-card {
-  background: #ffffff;
-  padding: 30px 25px 25px;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
-  height: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-}
-
-.team-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.team-card:hover::before {
-  opacity: 1;
-}
-
-.team-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 40px rgba(63, 187, 192, 0.12);
-  border-color: rgba(63, 187, 192, 0.1);
-}
-
-.team-card-avatar {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 18px;
-}
-
-.avatar-initials {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #eef4ff, #e0eaff);
-  color: #3fbbc0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--heading-font);
-  font-weight: 700;
-  font-size: 28px;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-}
-
-.team-card:hover .avatar-initials {
-  background: linear-gradient(135deg, #3fbbc0, #2ea6ab);
-  color: #ffffff;
-  transform: scale(1.05);
-}
-
-.team-card-avatar img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  transition: all 0.3s ease;
-}
-
-.team-card:hover .team-card-avatar img {
-  transform: scale(1.05);
-}
-
-.team-card h4 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1a2b4a;
-  margin-bottom: 4px;
-  letter-spacing: -0.3px;
-}
-
-.team-role {
-  font-size: 14px;
-  color: #3fbbc0;
-  font-weight: 500;
-  display: block;
-  margin-bottom: 12px;
-}
-
-.team-divider {
-  width: 30px;
-  height: 2px;
-  background: #3fbbc0;
-  margin: 12px auto;
-  opacity: 0.3;
-  border-radius: 2px;
-}
-
-.team-contact {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-}
-
-.team-contact-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #5a6b7f;
-  transition: all 0.3s ease;
-  padding: 4px 12px;
-  border-radius: 6px;
-  background: transparent;
-  width: 100%;
-  justify-content: center;
-}
-
-.team-contact-link:hover {
-  color: #3fbbc0;
-  background: #f8f9fa;
-  transform: translateX(4px);
-}
-
-.team-contact-link i {
-  color: #3fbbc0;
-  font-size: 14px;
-}
-
-.team-bio {
-  font-size: 13px;
-  color: #5a6b7f;
-  opacity: 0.8;
-  margin: 8px 0 0;
-  line-height: 1.5;
-}
-
-.team-social {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 4px;
-}
-
-.team-social-link {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #f8f9fa;
-  color: #5a6b7f;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  font-size: 16px;
-}
-
-.team-social-link:hover {
-  background: #3fbbc0;
-  color: #ffffff;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(63, 187, 192, 0.3);
-}
-
-@media (max-width: 768px) {
-  .team-card {
-    padding: 25px 20px 20px;
-  }
-  
-  .avatar-initials {
-    width: 70px;
-    height: 70px;
-    font-size: 24px;
-  }
-  
-  .team-card-avatar img {
-    width: 70px;
-    height: 70px;
-  }
-  
-  .team-card h4 {
-    font-size: 17px;
-  }
-}
-/*--------------------------------------------------------------
-# NEW: About Page - Company History / Timeline Section
+# History / Timeline Section
 --------------------------------------------------------------*/
 .history-section .history-intro {
   max-width: 720px;
@@ -3561,325 +3337,4 @@ section,
   color: var(--default-color);
   opacity: 0.8;
   margin-bottom: 0;
-}
-
-/* Professional Team Section */
-.professional-card {
-  background: var(--surface-color);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  transition: all 0.3s ease;
-  border: 1px solid var(--border-color);
-}
-
-.professional-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-}
-
-.professional-avatar {
-  position: relative;
-  padding: 30px 20px 20px;
-  text-align: center;
-  background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
-}
-
-.avatar-circle {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  border: 3px solid rgba(255,255,255,0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 12px;
-  font-size: 32px;
-  font-weight: 700;
-  color: white;
-}
-
-.avatar-circle.large {
-  width: 100px;
-  height: 100px;
-  font-size: 40px;
-}
-
-.member-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 14px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 20px;
-  font-size: 12px;
-  color: white;
-  font-weight: 500;
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.status-dot.active {
-  background: #4ade80;
-}
-
-.professional-info {
-  padding: 20px 24px 24px;
-}
-
-.professional-info h4 {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 4px;
-  color: var(--heading-color);
-}
-
-.member-role {
-  font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.member-divider {
-  height: 2px;
-  width: 40px;
-  background: var(--accent-color);
-  margin: 12px 0 14px;
-  border-radius: 2px;
-}
-
-.member-contact {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.contact-link {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  color: var(--text-color);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.contact-link:hover {
-  color: var(--accent-color);
-}
-
-.contact-link i {
-  font-size: 14px;
-  color: var(--accent-color);
-  width: 20px;
-  flex-shrink: 0;
-}
-
-.member-bio {
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin: 8px 0 0;
-}
-
-.professional-social {
-  display: flex;
-  gap: 10px;
-  margin-top: 4px;
-}
-
-.social-link {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  transition: all 0.3s ease;
-  text-decoration: none;
-}
-
-.social-link:hover {
-  background: var(--accent-color);
-  border-color: var(--accent-color);
-  color: white;
-}
-
-/* Stats Icons */
-.stats-icon {
-  font-size: 32px;
-  color: var(--accent-color);
-  margin-right: 16px;
-  flex-shrink: 0;
-  opacity: 0.8;
-}
-
-.stats-item {
-  padding: 24px 20px;
-  background: var(--surface-color);
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
-}
-
-.stats-item:hover {
-  border-color: var(--accent-color);
-  transform: translateY(-2px);
-}
-
-.stats-item span {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--heading-color);
-  line-height: 1.2;
-}
-
-.stats-item p {
-  margin: 0;
-  font-size: 14px;
-  color: var(--text-muted);
-}
-
-@media (max-width: 768px) {
-  .avatar-circle {
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
-  }
-  
-  .avatar-circle.large {
-    width: 80px;
-    height: 80px;
-    font-size: 32px;
-  }
-  
-  .stats-icon {
-    font-size: 24px;
-    margin-right: 12px;
-  }
-  
-  .stats-item span {
-    font-size: 22px;
-  }
-}
-
-/*--------------------------------------------------------------
-# UPDATED: Stats Section - Clean Professional Cards
---------------------------------------------------------------*/
-.stats .stats-card {
-  background: var(--surface-color);
-  padding: 30px 25px;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px var(--shadow-color);
-  transition: all 0.3s ease;
-  height: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.stats .stats-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.stats .stats-card:hover::before {
-  opacity: 1;
-}
-
-.stats .stats-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 40px rgba(63, 187, 192, 0.12);
- 
-}
-
-.stats .stats-card-icon {
-  flex-shrink: 0;
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #eef4ff, #e0eaff);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.stats .stats-card:hover .stats-card-icon {
-  background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
-  transform: scale(1.05);
-}
-
-.stats .stats-card-icon i {
-  font-size: 28px;
-  color: var(--accent-color);
-  transition: all 0.3s ease;
-}
-
-.stats .stats-card:hover .stats-card-icon i {
-  color: var(--contrast-color);
-}
-
-.stats .stats-card-content {
-  flex: 1;
-}
-
-.stats .stats-value {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--heading-color);
-  display: block;
-  line-height: 1.2;
-  margin-bottom: 4px;
-  letter-spacing: -0.5px;
-}
-
-.stats .stats-label {
-  font-size: 14px;
-  color: var(--default-color);
-  opacity: 0.7;
-  margin-bottom: 0;
-  line-height: 1.4;
-}
-
-@media (max-width: 768px) {
-  .stats .stats-card {
-    padding: 20px;
-    gap: 15px;
-  }
-  
-  .stats .stats-card-icon {
-    width: 50px;
-    height: 50px;
-  }
-  
-  .stats .stats-card-icon i {
-    font-size: 24px;
-  }
-  
-  .stats .stats-value {
-    font-size: 28px;
-  }
-  
-  .stats .stats-label {
-    font-size: 13px;
-  }
 }
