@@ -1,13 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getPackageBySlug } from "../services/api.js";
-import ModuleChip from "../components/ModuleChip.jsx";
 import useSEO from "../hooks/useSEO.js";
-
-function formatPrice(price) {
-  if (price === null || price === undefined) return "Custom Pricing";
-  return `KES ${Number(price).toLocaleString("en-KE")}`;
-}
 
 // Shared button/badge styles, defined once instead of repeated inline
 // style objects on every <Link>. Colors pull from the theme's CSS
@@ -68,8 +62,15 @@ export default function PackageDetailPage() {
     let isMounted = true;
     setIsLoading(true);
     getPackageBySlug(slug)
-      .then((data) => isMounted && setPkg(data))
-      .catch((err) => isMounted && setError(err.message))
+      .then((data) => {
+        if (!isMounted) return;
+        console.log('Package detail data:', data);
+        setPkg(data);
+      })
+      .catch((err) => {
+        console.error('Error fetching package:', err);
+        isMounted && setError(err.message);
+      })
       .finally(() => isMounted && setIsLoading(false));
     return () => {
       isMounted = false;
@@ -157,7 +158,7 @@ export default function PackageDetailPage() {
                   </div>
                 )}
                 <h1>{pkg.name}</h1>
-                <p className="mb-0">{pkg.description}</p>
+                <p className="mb-0">{pkg.description || pkg.tagline}</p>
               </div>
             </div>
           </div>
@@ -181,31 +182,18 @@ export default function PackageDetailPage() {
               {/* Price Card */}
               <div className="mb-4" style={styles.priceCard}>
                 <h2 className="fw-bold mb-0" style={{ fontSize: "42px", color: "var(--heading-color)" }}>
-                  {formatPrice(pkg.price)}
+                  <sup>KES</sup> {pkg.price}
+                  <span style={{ fontSize: "18px", fontWeight: 400, color: "var(--default-color)", opacity: 0.7 }}>
+                    {" "}setup
+                  </span>
                 </h2>
-                {hasPrice && (
-                  <span className="text-muted">per {pkg.billing_cycle} facility</span>
+                {pkg.sla && (
+                  <span className="text-muted">+ KES {pkg.sla}/mo SLA</span>
                 )}
               </div>
 
               {/* Package Specs */}
               <div className="row justify-content-center g-3 mb-5">
-                {pkg.max_beds !== null && pkg.max_beds !== undefined && (
-                  <div className="col-auto">
-                    <div style={styles.specChip}>
-                      <i className="bi bi-hospital me-2" style={{ color: "var(--accent-color)" }}></i>
-                      <strong>{pkg.max_beds || "Unlimited"}</strong> Beds
-                    </div>
-                  </div>
-                )}
-                {pkg.max_users !== null && pkg.max_users !== undefined && (
-                  <div className="col-auto">
-                    <div style={styles.specChip}>
-                      <i className="bi bi-people me-2" style={{ color: "var(--accent-color)" }}></i>
-                      <strong>{pkg.max_users || "Unlimited"}</strong> Users
-                    </div>
-                  </div>
-                )}
                 <div className="col-auto">
                   <div style={styles.specChip}>
                     <i className="bi bi-grid me-2" style={{ color: "var(--accent-color)" }}></i>
@@ -214,10 +202,18 @@ export default function PackageDetailPage() {
                 </div>
                 <div className="col-auto">
                   <div style={styles.specChip}>
-                    <i className="bi bi-arrow-repeat me-2" style={{ color: "var(--accent-color)" }}></i>
-                    <strong className="text-capitalize">{pkg.billing_cycle}</strong> Billing
+                    <i className="bi bi-tag me-2" style={{ color: "var(--accent-color)" }}></i>
+                    {pkg.featured ? 'Featured Package' : 'Standard Package'}
                   </div>
                 </div>
+                {pkg.badge && (
+                  <div className="col-auto">
+                    <div style={styles.specChip}>
+                      <i className="bi bi-star-fill me-2" style={{ color: "var(--accent-color)" }}></i>
+                      <strong>{pkg.badge}</strong>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* CTA Buttons */}
@@ -246,14 +242,17 @@ export default function PackageDetailPage() {
         <div className="container">
           {pkg.modules && pkg.modules.length > 0 ? (
             <div className="row gy-4">
-              {pkg.modules.map((m, index) => (
+              {pkg.modules.map((moduleName, index) => (
                 <div
-                  key={m.id}
+                  key={moduleName}
                   className="col-lg-4 col-md-6"
                   data-aos="fade-up"
                   data-aos-delay={100 + index * 50}
                 >
-                  <ModuleChip module={m} />
+                  <div className="module-chip">
+                    <i className="bi bi-check-circle-fill me-2" style={{ color: "var(--accent-color)" }}></i>
+                    {moduleName}
+                  </div>
                 </div>
               ))}
             </div>
@@ -264,39 +263,6 @@ export default function PackageDetailPage() {
           )}
         </div>
       </section>
-
-      {/* Features Section */}
-      {pkg.features && pkg.features.length > 0 && (
-        <section className="section">
-          <div className="container section-title" data-aos="fade-up">
-            <h2>Package Highlights</h2>
-            <p>What makes this package special</p>
-          </div>
-
-          <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-lg-8">
-                <ul className="list-unstyled">
-                  {pkg.features.map((feature, index) => (
-                    <li
-                      key={feature.id}
-                      className="d-flex align-items-start py-2"
-                      data-aos="fade-up"
-                      data-aos-delay={100 + index * 50}
-                    >
-                      <i
-                        className="bi bi-check-circle-fill me-3 mt-1"
-                        style={{ color: "var(--accent-color)", fontSize: "20px" }}
-                      ></i>
-                      <span style={{ fontSize: "16px" }}>{feature.text}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Call to Action */}
       <section className="call-to-action section accent-background">

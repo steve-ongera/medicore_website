@@ -3,24 +3,47 @@ import { Link } from 'react-router-dom';
 import { getServices } from '../services/api.js';
 import useSEO from '../hooks/useSEO.js';
 
+// Normalize whatever the API returns into a plain array of services.
+// Handles a plain array, DRF pagination ({ results: [...] }), or a
+// wrapped { data: [...] } shape — falls back to [] otherwise so
+// .map() never throws.
+function normalizeServicesResponse(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
+
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchServices = async () => {
       try {
         const data = await getServices();
-        setServices(data);
+        if (isMounted) setServices(normalizeServicesResponse(data));
       } catch (err) {
-        setError(err.message);
+        if (isMounted) {
+          setError(err.message);
+          setServices([]);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
     };
+
     fetchServices();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  const safeServices = Array.isArray(services) ? services : [];
 
   // Fallback icons if service doesn't have one defined
   const fallbackIcons = [
@@ -45,12 +68,12 @@ const ServicesPage = () => {
   // Only build the ItemList schema once services have actually loaded,
   // so we don't publish an empty list to search engines during fetch.
   const schema = useMemo(() => {
-    if (isLoading || services.length === 0) return undefined;
+    if (isLoading || safeServices.length === 0) return undefined;
     return {
       "@context": "https://schema.org",
       "@type": "ItemList",
       name: "Medicore HMIS Services",
-      itemListElement: services.map((service, index) => ({
+      itemListElement: safeServices.map((service, index) => ({
         "@type": "ListItem",
         position: index + 1,
         item: {
@@ -66,7 +89,7 @@ const ServicesPage = () => {
         },
       })),
     };
-  }, [services, isLoading]);
+  }, [safeServices, isLoading]);
 
   useSEO({
     title: "Our Services",
@@ -126,15 +149,15 @@ const ServicesPage = () => {
               <i className="bi bi-exclamation-triangle me-2"></i>
               {error}
             </div>
-          ) : services.length === 0 ? (
+          ) : safeServices.length === 0 ? (
             <div className="text-center py-5" data-aos="fade-up">
               <p className="text-muted">No services available at the moment.</p>
             </div>
           ) : (
             <div className="row gy-4">
-              {services.map((service, index) => (
+              {safeServices.map((service, index) => (
                 <div
-                  key={service.id}
+                  key={service.id ?? service.slug ?? service.name}
                   className="col-lg-4 col-md-6"
                   data-aos="fade-up"
                   data-aos-delay={100 + (index * 100)}

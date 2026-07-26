@@ -1,8 +1,38 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getPackages, getFAQs } from "../services/api.js";
-import PackageCard from "../components/PackageCard.jsx";
 import useSEO from "../hooks/useSEO.js";
+
+// Normalize whatever the API returns into a plain array. Handles a
+// plain array, DRF pagination ({ results: [...] }), or a wrapped
+// { data: [...] } shape — falls back to [] otherwise so .map() never
+// throws.
+function normalizeListResponse(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
+
+// Normalize a package's module list into an array of plain strings,
+// regardless of whether the API sends strings or PackageModule
+// objects like { id, name, display_order }.
+function normalizeModules(modules) {
+  if (!Array.isArray(modules)) return [];
+  return modules.map((mod) => (typeof mod === "string" ? mod : mod?.name)).filter(Boolean);
+}
+
+// Read a value from the first matching key present on the object, so
+// the UI works whether the serializer uses "setup"/"sla"/"featured"
+// naming or the Django model's "price"/"monthly_sla"/"is_featured".
+function pick(obj, keys, fallback = "") {
+  for (const key of keys) {
+    if (obj?.[key] !== undefined && obj?.[key] !== null && obj?.[key] !== "") {
+      return obj[key];
+    }
+  }
+  return fallback;
+}
 
 export default function PackagesPage() {
   const [packages, setPackages] = useState([]);
@@ -16,15 +46,37 @@ export default function PackagesPage() {
     Promise.all([getPackages(), getFAQs()])
       .then(([packagesData, faqsData]) => {
         if (!isMounted) return;
-        setPackages(packagesData);
-        setFaqs(faqsData);
+
+        // Debug: Log the actual data received
+        console.log('Packages data received:', packagesData);
+        console.log('FAQs data received:', faqsData);
+
+        // Unwrap plain arrays, DRF pagination ({ results: [...] }),
+        // or { data: [...] } — whichever shape the API sends back.
+        const packagesArray = normalizeListResponse(packagesData);
+        const faqsArray = normalizeListResponse(faqsData);
+
+        console.log('Packages array length:', packagesArray.length);
+
+        setPackages(packagesArray);
+        setFaqs(faqsArray);
       })
-      .catch((err) => isMounted && setError(err.message))
+      .catch((err) => {
+        console.error('Error fetching data:', err);
+        if (isMounted) {
+          setError(err.message);
+          setPackages([]);
+          setFaqs([]);
+        }
+      })
       .finally(() => isMounted && setIsLoading(false));
     return () => {
       isMounted = false;
     };
   }, []);
+
+  const safePackages = Array.isArray(packages) ? packages : [];
+  const safeFaqs = Array.isArray(faqs) ? faqs : [];
 
   const toggleFaq = (id) => {
     setOpenFaqId(openFaqId === id ? null : id);
@@ -39,11 +91,11 @@ export default function PackagesPage() {
 
     const graph = [];
 
-    if (packages.length > 0) {
+    if (safePackages.length > 0) {
       graph.push({
         "@type": "ItemList",
         name: "Medicore HMIS Packages",
-        itemListElement: packages.map((pkg, index) => ({
+        itemListElement: safePackages.map((pkg, index) => ({
           "@type": "ListItem",
           position: index + 1,
           item: {
@@ -52,7 +104,7 @@ export default function PackagesPage() {
             description: pkg.tagline || undefined,
             offers: {
               "@type": "Offer",
-              price: pkg.price ?? undefined,
+              price: pick(pkg, ["price", "setup"]) || undefined,
               priceCurrency: "KES",
               url: `https://medicorehmis.co.ke/packages/${pkg.slug}`,
             },
@@ -61,10 +113,10 @@ export default function PackagesPage() {
       });
     }
 
-    if (faqs.length > 0) {
+    if (safeFaqs.length > 0) {
       graph.push({
         "@type": "FAQPage",
-        mainEntity: faqs.map((faq) => ({
+        mainEntity: safeFaqs.map((faq) => ({
           "@type": "Question",
           name: faq.question,
           acceptedAnswer: {
@@ -78,7 +130,7 @@ export default function PackagesPage() {
     if (graph.length === 0) return undefined;
 
     return { "@context": "https://schema.org", "@graph": graph };
-  }, [packages, faqs, isLoading]);
+  }, [safePackages, safeFaqs, isLoading]);
 
   useSEO({
     title: "Packages & Pricing",
@@ -116,9 +168,7 @@ export default function PackagesPage() {
         </nav>
       </div>
 
-      {/* Packages Section — same pricing-item grid rhythm as the
-          homepage packages section (col-lg-4 col-md-6), so the cards
-          line up the same way whichever page you land on. */}
+      {/* Packages Section */}
       <section id="packages" className="pricing section">
         <div className="container section-title" data-aos="fade-up">
           <h2>Choose Your Package</h2>
@@ -141,23 +191,84 @@ export default function PackagesPage() {
               <i className="bi bi-exclamation-triangle me-2"></i>
               {error}
             </div>
+          ) : safePackages.length === 0 ? (
+            <div className="text-center py-5" data-aos="fade-up">
+              <p className="text-muted">No packages available at the moment.</p>
+              <p className="text-muted small mt-2">
+                Check the console (F12) for debug information about the API response.
+              </p>
+            </div>
           ) : (
             <div className="row gy-4">
-              {packages.map((pkg, index) => (
-                <div 
-                  key={pkg.id}
-                  className="col-lg-4 col-md-6" 
-                  data-aos="fade-up" 
-                  data-aos-delay={100 + (index * 100)}
-                >
-                  <PackageCard pkg={pkg} />
-                </div>
-              ))}
+              {safePackages.map((pkg, index) => {
+                const isFeatured = pick(pkg, ["featured", "is_featured"], false);
+                const badge = pick(pkg, ["badge", "badge_text"]);
+                const pricePrefix = pick(pkg, ["price_prefix", "setupPrefix"]);
+                const price = pick(pkg, ["price", "setup"]);
+                const slaPrefix = pick(pkg, ["monthly_sla_prefix", "sla_prefix", "slaPrefix"]);
+                const sla = pick(pkg, ["monthly_sla", "sla"]);
+                const modulesLabel = pick(pkg, ["modules_label", "modulesLabel"], "All Included Modules");
+                const modules = normalizeModules(pkg.modules);
+
+                return (
+                  <div
+                    key={pkg.id ?? pkg.slug ?? index}
+                    className="col-lg-4 col-md-6"
+                    data-aos="fade-up"
+                    data-aos-delay={100 + (index * 100)}
+                  >
+                    <div className={`pricing-item h-100${isFeatured ? " featured" : ""}`}>
+                      {badge && <span className="advanced">{badge}</span>}
+                      <h3>{pkg.name}</h3>
+                      <p className="pricing-subtitle">{pkg.tagline || pkg.subtitle}</p>
+                      <h4>
+                        <sup>KES</sup>
+                        {pricePrefix}
+                        {price}
+                        <span> setup</span>
+                      </h4>
+                      <p className="pricing-sla">
+                        + KES {slaPrefix}
+                        {sla}/mo SLA
+                      </p>
+                      <p className="pricing-modules-label">
+                        {modulesLabel}
+                        <span className="pricing-scroll-hint">scroll for more</span>
+                      </p>
+                      <ul>
+                        {modules.map((mod) => (
+                          <li key={mod}>
+                            <i className="bi bi-check-circle"></i>
+                            {mod}
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="btn-wrap">
+                        <Link to={`/packages/${pkg.slug}`} className="btn-buy" style={{ 
+                          background: "var(--accent-color)",
+                          color: "var(--contrast-color)",
+                          display: "inline-block",
+                          padding: "10px 40px",
+                          borderRadius: "30px",
+                          fontSize: "14px",
+                          fontWeight: 600,
+                          fontFamily: "var(--heading-font)",
+                          transition: "all 0.3s ease",
+                          boxShadow: "0 4px 15px rgba(63, 187, 192, 0.3)",
+                        }}>
+                          <i className="bi bi-eye me-2"></i>
+                          View Details
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
 
           {/* Compare Packages CTA */}
-          {!isLoading && packages.length > 0 && (
+          {!isLoading && safePackages.length > 0 && (
             <div className="text-center mt-5" data-aos="fade-up">
               <p className="text-muted mb-3">
                 Need a custom package for your facility?
@@ -176,7 +287,7 @@ export default function PackagesPage() {
       </section>
 
       {/* FAQ Section */}
-      {faqs.length > 0 && (
+      {safeFaqs.length > 0 && (
         <section id="faq" className="faq section light-background">
           <div className="container section-title" data-aos="fade-up">
             <h2>Frequently Asked Questions</h2>
@@ -187,11 +298,11 @@ export default function PackagesPage() {
             <div className="row justify-content-center">
               <div className="col-lg-10" data-aos="fade-up" data-aos-delay="100">
                 <div className="faq-container">
-                  {faqs.map((faq, index) => {
+                  {safeFaqs.map((faq, index) => {
                     const isOpen = openFaqId === faq.id;
                     return (
                       <div 
-                        key={faq.id}
+                        key={faq.id ?? index}
                         className={`faq-item ${isOpen ? 'faq-active' : ''}`}
                       >
                         <h3 onClick={() => toggleFaq(faq.id)}>
