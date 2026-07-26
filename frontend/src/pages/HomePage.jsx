@@ -348,7 +348,7 @@ export default function HomePage() {
   }, [lightboxOpen]);
 
   const heroData = {
-    headline: settings?.hero_headline || "Hospital Management, Simplified for Kenya",
+    headline: settings?.hero_headline || "Hospital Management Simplified Kenya",
     subtext:
       settings?.hero_subtext ||
       "SHA-ready, eTIMS-compliant HMIS software for clinics, nursing homes and hospitals across Kenya — from outpatient to bed management.",

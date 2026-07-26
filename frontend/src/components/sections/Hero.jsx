@@ -17,7 +17,7 @@ const Hero = ({ settings }) => {
       title: settings?.headline || "Welcome to Medicore HMIS",
       description:
         settings?.subtext ||
-        "Hospital management made simple for clinics, nursing homes and hospitals across Kenya, fully SHA-ready and eTIMS-compliant for every modern healthcare facility."
+        "Hospital Management, Simplified Kenya"
     },
     {
       id: 2,
