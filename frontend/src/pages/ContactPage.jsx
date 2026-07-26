@@ -37,7 +37,7 @@ const ContactPage = () => {
         url: "https://medicorehmis.co.ke",
         contactPoint: {
           "@type": "ContactPoint",
-          telephone: settings?.support_phone || "+254 700 000000",
+          telephone: settings?.support_phone || "+254 757 790 687",
           email: settings?.support_email || "support@medicorehmis.co.ke",
           contactType: "customer support",
           areaServed: "KE",
@@ -130,7 +130,7 @@ const ContactPage = () => {
               <div className="info-item d-flex flex-column justify-content-center align-items-center h-100">
                 <i className="bi bi-telephone"></i>
                 <h3>Call Us</h3>
-                <p>{settings?.support_phone || '+254 700 000000'}</p>
+                <p>{settings?.support_phone || '+254 757 790 687'}</p>
               </div>
             </div>
 

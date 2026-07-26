@@ -59,7 +59,7 @@ export default function Navbar() {
             <i className="bi bi-clock me-1"></i> Monday - Saturday, 8AM to 10PM
           </div>
           <div className="d-flex align-items-center">
-            <i className="bi bi-telephone me-1"></i> Call us now +254 700 000000
+            <i className="bi bi-telephone me-1"></i> Call us now +254 757 790 687
           </div>
         </div>
       </div>

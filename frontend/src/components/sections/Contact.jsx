@@ -68,7 +68,7 @@ const Contact = ({ settings = null }) => {
                 <div className="info-item d-flex flex-column justify-content-center align-items-center" data-aos="fade-up" data-aos-delay="300">
                   <i className="bi bi-telephone"></i>
                   <h3>Call Us</h3>
-                  <p>{settings?.support_phone || '+254 700 000000'}</p>
+                  <p>{settings?.support_phone || '+254 757 790 687'}</p>
                 </div>
               </div>
 

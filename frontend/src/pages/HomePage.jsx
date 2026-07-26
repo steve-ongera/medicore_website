@@ -352,7 +352,7 @@ export default function HomePage() {
     subtext:
       settings?.hero_subtext ||
       "SHA-ready, eTIMS-compliant HMIS software for clinics, nursing homes and hospitals across Kenya — from outpatient to bed management.",
-    supportPhone: settings?.support_phone || "+254 700 000000",
+    supportPhone: settings?.support_phone || "+254 757 790 687",
     supportEmail: settings?.support_email || "support@medicorehmis.co.ke",
   };
 
